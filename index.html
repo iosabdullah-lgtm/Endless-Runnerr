@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Smooth Weather Human Runner - Dev: Muhammad Abdullah</title>
+    <title>3D Weather Runner Pro - Dev: Muhammad Abdullah</title>
     <style>
         * {
             box-sizing: border-box;
@@ -22,18 +22,43 @@
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
             touch-action: manipulation;
         }
 
-        header {
-            text-align: center;
-            padding: 4px 5px;
+        #game-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: #0b0f19;
+        }
+
+        #gameCanvas {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            background: #0b0f19;
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 10px;
+            left: 0;
             width: 100%;
-            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 25;
+            pointer-events: none;
+        }
+
+        .title-box {
+            text-align: left;
         }
 
         h1 { 
@@ -42,81 +67,70 @@
             text-transform: uppercase; 
             letter-spacing: 1px; 
             text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); 
-            font-size: clamp(0.85rem, 3.5vw, 1.2rem);
+            font-size: clamp(0.85rem, 3.5vw, 1.1rem);
         }
         h3 { 
             margin: 0; 
             color: #facc15; 
             text-shadow: 0 0 5px rgba(250, 204, 21, 0.4); 
-            font-size: clamp(0.6rem, 2.2vw, 0.75rem);
+            font-size: clamp(0.55rem, 2vw, 0.7rem);
         }
 
-        #game-wrapper {
-            position: relative;
-            width: 100vw;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2px;
-            overflow: hidden;
+        #btn-pause {
+            pointer-events: auto;
+            padding: 6px 14px;
+            background: rgba(30, 41, 59, 0.85);
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        #gameCanvas {
-            border: 2px solid #38bdf8;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-            border-radius: 10px;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 800px;
-            max-height: 450px;
-            object-fit: contain;
-            background: #0b0f19;
-        }
-
-        /* UI Overlays */
         .overlay-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(11, 15, 25, 0.94);
+            background: rgba(11, 15, 25, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 30;
-            border-radius: 10px;
-            padding: 10px;
+            padding: 15px;
             text-align: center;
         }
 
         .overlay-screen h2 {
             color: #facc15;
-            font-size: clamp(1rem, 4vw, 1.3rem);
-            margin-bottom: 8px;
+            font-size: clamp(1.2rem, 5vw, 1.6rem);
+            margin-bottom: 10px;
             text-transform: uppercase;
         }
 
         .select-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             justify-content: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             max-width: 90%;
         }
 
         .btn-ui {
-            padding: 6px 10px;
+            padding: 8px 14px;
             background: #1e293b;
-            border: 2px solid #38bdf8;
+            border: none;
             color: #fff;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
 
         .btn-ui.active {
@@ -125,79 +139,62 @@
         }
 
         .btn-start {
-            padding: 10px 24px;
+            padding: 12px 30px;
             background: #22c55e;
             border: none;
             color: #fff;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
             cursor: pointer;
+            margin-top: 5px;
         }
 
-        #btn-pause {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            z-index: 25;
-            padding: 4px 10px;
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid #38bdf8;
-            color: #fff;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        /* In-Canvas Overlay Controls */
         .controls-overlay {
             position: absolute;
-            bottom: 8px;
+            bottom: 20px;
             left: 0;
             width: 100%;
-            padding: 0 10px;
+            padding: 0 20px;
             display: flex;
             justify-content: space-between;
-            gap: 12px;
+            gap: 30px;
             z-index: 20;
             pointer-events: none;
         }
 
         .btn-touch {
             flex: 1;
-            padding: 10px 0;
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(4px);
-            border: 2px solid rgba(56, 189, 248, 0.85);
-            border-radius: 8px;
+            padding: 18px 0;
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(6px);
+            border: none;
+            border-radius: 16px;
             color: #ffffff;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 24px;
             text-align: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             pointer-events: auto;
         }
 
         .btn-touch:active {
-            background: rgba(56, 189, 248, 0.9);
-            color: #0f172a;
-            transform: scale(0.97);
+            background: rgba(56, 189, 248, 0.5);
+            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>3D Weather Runner</h1>
-        <h3>Dev: Muhammad Abdullah</h3>
-    </header>
-
     <div id="game-wrapper">
-        <button id="btn-pause" style="display:none;">PAUSE ⏸</button>
-        
-        <!-- Start / Weather Selector Overlay -->
+        <div class="top-bar">
+            <div class="title-box">
+                <h1>3D Weather Runner</h1>
+                <h3>Dev: Muhammad Abdullah</h3>
+            </div>
+            <button id="btn-pause" style="display:none;">⏸</button>
+        </div>
+
         <div id="menu-overlay" class="overlay-screen">
             <h2>Select Weather Mode</h2>
             <div class="select-group">
@@ -212,10 +209,9 @@
 
         <canvas id="gameCanvas"></canvas>
 
-        <!-- Touch Controls Inside Game Area -->
         <div class="controls-overlay">
-            <div class="btn-touch" id="btn-duck">DUCK 👇</div>
-            <div class="btn-touch" id="btn-jump">JUMP 🏃‍♂️</div>
+            <div class="btn-touch" id="btn-duck">👇</div>
+            <div class="btn-touch" id="btn-jump">🏃‍♂️</div>
         </div>
     </div>
 
@@ -226,6 +222,7 @@
         const menuOverlay = document.getElementById('menu-overlay');
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
         function playSound(freq, type, duration) {
             try {
                 let osc = audioCtx.createOscillator();
@@ -241,12 +238,14 @@
         }
 
         function resizeCanvasResolution() {
-            canvas.width = 800;
-            canvas.height = 450;
+            canvas.width = window.innerWidth * window.devicePixelRatio;
+            canvas.height = window.innerHeight * window.devicePixelRatio;
         }
+        window.addEventListener('resize', resizeCanvasResolution);
         resizeCanvasResolution();
 
         let score = 0;
+        let coins = parseInt(localStorage.getItem('runner_coins')) || 0;
         let highScore = localStorage.getItem('runner_highscore') || 0;
         let level = 1;
         let gameOver = false;
@@ -257,10 +256,10 @@
         let selectedMode = 'AUTO';
 
         const weathers = [
-            { name: 'SUMMER', skyTop: [56, 189, 248], skyBot: [2, 132, 199], groundTop: [22, 197, 94], rain: 0, snow: 0 },
-            { name: 'RAINY', skyTop: [71, 85, 105], skyBot: [30, 41, 59], groundTop: [21, 128, 61], rain: 1, snow: 0 },
-            { name: 'STORM', skyTop: [15, 23, 42], skyBot: [2, 6, 23], groundTop: [15, 23, 42], rain: 1.5, snow: 0 },
-            { name: 'WINTER', skyTop: [148, 163, 184], skyBot: [71, 85, 105], groundTop: [241, 245, 249], rain: 0, snow: 1 }
+            { name: 'SUMMER', skyTop: [56, 189, 248], skyBot: [2, 132, 199], groundTop: [22, 197, 94], rain: 0, snow: 0, speedMult: 1.0 },
+            { name: 'RAINY', skyTop: [71, 85, 105], skyBot: [30, 41, 59], groundTop: [21, 128, 61], rain: 1, snow: 0, speedMult: 1.05 },
+            { name: 'STORM', skyTop: [15, 23, 42], skyBot: [2, 6, 23], groundTop: [15, 23, 42], rain: 1.5, snow: 0, speedMult: 1.15 },
+            { name: 'WINTER', skyTop: [148, 163, 184], skyBot: [71, 85, 105], groundTop: [241, 245, 249], rain: 0, snow: 1, speedMult: 0.95 }
         ];
 
         let currentWeatherIdx = 0;
@@ -269,36 +268,37 @@
         let lightning = false;
 
         let particles = [];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 60; i++) {
             particles.push({
-                x: Math.random() * 800,
-                y: Math.random() * 450,
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
                 speedY: Math.random() * 8 + 4,
                 speedX: Math.random() * 2 - 1,
-                length: Math.random() * 12 + 8,
+                length: Math.random() * 15 + 10,
                 size: Math.random() * 3 + 2
             });
         }
 
         let clouds = [
-            { x: 100, y: 40, z: 0.5, r: 25 },
-            { x: 350, y: 65, z: 0.8, r: 35 },
-            { x: 600, y: 35, z: 0.4, r: 20 }
+            { x: 100, y: 50, z: 0.5, r: 30 },
+            { x: 400, y: 80, z: 0.8, r: 45 },
+            { x: 700, y: 40, z: 0.4, r: 25 }
         ];
 
         const player = {
-            x: 60,
+            x: 80,
             y: 0,
-            width: 55,
-            height: 75,
+            width: 60,
+            height: 85,
             dy: 0,
             gravity: 0.6,
-            jumpForce: -12,
+            jumpForce: -13,
             isJumping: false,
             isDucking: false
         };
 
         let obstacles = [];
+        let collectibleCoins = [];
         let spawnTimer = 0;
 
         function setWeatherMode(mode, btn) {
@@ -325,13 +325,15 @@
         btnPause.addEventListener('click', () => {
             if (!gameStarted || gameOver) return;
             isPaused = !isPaused;
-            btnPause.innerText = isPaused ? 'RESUME ▶' : 'PAUSE ⏸';
+            btnPause.innerText = isPaused ? '▶' : '⏸';
             if (!isPaused) animate();
         });
 
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') jump();
-            if (e.code === 'ArrowDown') { player.isDucking = true; playSound(200, 'sine', 0.1); }
+            if (e.code === 'ArrowDown') { 
+                if(!player.isDucking) { player.isDucking = true; playSound(200, 'sine', 0.1); }
+            }
         });
 
         window.addEventListener('keyup', (e) => {
@@ -342,7 +344,10 @@
         const btnDuck = document.getElementById('btn-duck');
 
         btnJump.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
-        btnDuck.addEventListener('touchstart', (e) => { e.preventDefault(); player.isDucking = true; playSound(200, 'sine', 0.1); });
+        btnDuck.addEventListener('touchstart', (e) => { 
+            e.preventDefault(); 
+            if(!player.isDucking) { player.isDucking = true; playSound(200, 'sine', 0.1); }
+        });
         btnDuck.addEventListener('touchend', (e) => { e.preventDefault(); player.isDucking = false; });
 
         canvas.addEventListener('mousedown', jump);
@@ -362,9 +367,10 @@
             level = 1;
             gameSpeed = 5.5;
             obstacles = [];
+            collectibleCoins = [];
             gameOver = false;
             isPaused = false;
-            btnPause.innerText = 'PAUSE ⏸';
+            btnPause.innerText = '⏸';
             if (selectedMode === 'AUTO') {
                 currentWeatherIdx = 0;
                 nextWeatherIdx = 1;
@@ -404,8 +410,8 @@
         }
 
         function drawDynamicWeather() {
-            let skyHeight = canvas.height * 0.60;
-            let groundHeight = canvas.height * 0.40;
+            let skyHeight = canvas.height * 0.65;
+            let groundHeight = canvas.height * 0.35;
 
             if (lightning) {
                 ctx.fillStyle = '#ffffff';
@@ -427,8 +433,8 @@
             ctx.fillRect(0, 0, canvas.width, skyHeight);
 
             clouds.forEach(c => {
-                c.x -= c.z * 1.2;
-                if (c.x < -100) c.x = canvas.width + 100;
+                c.x -= c.z * 1.5;
+                if (c.x < -150) c.x = canvas.width + 150;
 
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
                 ctx.beginPath();
@@ -446,11 +452,11 @@
 
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 2;
-            let offset = (frame * gameSpeed) % 40;
-            for (let x = -offset; x < canvas.width; x += 40) {
+            let offset = (frame * gameSpeed) % 50;
+            for (let x = -offset; x < canvas.width; x += 50) {
                 ctx.beginPath();
                 ctx.moveTo(x, skyHeight + 5);
-                ctx.lineTo(x - 20, canvas.height);
+                ctx.lineTo(x - 25, canvas.height);
                 ctx.stroke();
             }
 
@@ -459,14 +465,14 @@
 
             if (currentRain > 0.05) {
                 ctx.strokeStyle = `rgba(186, 230, 253, ${Math.min(currentRain, 0.85)})`;
-                ctx.lineWidth = currentRain > 1 ? 2 : 1.2;
+                ctx.lineWidth = currentRain > 1 ? 2.5 : 1.5;
                 particles.forEach(p => {
                     p.y += p.speedY + (currentRain > 1 ? 4 : 0);
                     p.x += p.speedX - 2;
                     if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x - 4, p.y + p.length);
+                    ctx.lineTo(p.x - 5, p.y + p.length);
                     ctx.stroke();
                 });
             } else if (currentSnow > 0.05) {
@@ -495,76 +501,101 @@
             let shadowAlpha = isJumping ? 0.15 : 0.4;
             ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
             ctx.beginPath(); 
-            ctx.ellipse(24, isDucking ? 50 : 72, 26, 7, 0, 0, Math.PI * 2); 
+            ctx.ellipse(28, isDucking ? 60 : 82, 30, 8, 0, 0, Math.PI * 2); 
             ctx.fill();
 
             if (isDucking) {
-                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 8; ctx.lineCap = 'round';
-                ctx.beginPath(); ctx.moveTo(12, 32); ctx.lineTo(0, 46); ctx.lineTo(10, 48); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(12, 32); ctx.lineTo(22, 46); ctx.lineTo(32, 48); ctx.stroke();
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(14, 38); ctx.lineTo(0, 56); ctx.lineTo(12, 58); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(14, 38); ctx.lineTo(26, 56); ctx.lineTo(38, 58); ctx.stroke();
                 
-                let torsoGrad = ctx.createLinearGradient(0, 18, 28, 32);
+                let torsoGrad = ctx.createLinearGradient(0, 20, 32, 38);
                 torsoGrad.addColorStop(0, '#f97316'); torsoGrad.addColorStop(1, '#c2410c');
                 ctx.fillStyle = torsoGrad;
-                ctx.beginPath(); ctx.ellipse(18, 26, 17, 10, -0.4, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(20, 30, 20, 12, -0.4, 0, Math.PI * 2); ctx.fill();
 
-                let headGrad = ctx.createRadialGradient(28, 16, 2, 28, 16, 9);
+                let headGrad = ctx.createRadialGradient(32, 18, 2, 32, 18, 11);
                 headGrad.addColorStop(0, '#ffedd5'); headGrad.addColorStop(1, '#fed7aa');
                 ctx.fillStyle = headGrad;
-                ctx.beginPath(); ctx.arc(28, 16, 9, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(32, 18, 11, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath(); ctx.arc(28, 14, 9, Math.PI, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(32, 16, 11, Math.PI, Math.PI * 2); ctx.fill();
 
-                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 7;
-                ctx.beginPath(); ctx.moveTo(16, 22); ctx.lineTo(28, 30); ctx.stroke();
+                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 8;
+                ctx.beginPath(); ctx.moveTo(18, 26); ctx.lineTo(32, 35); ctx.stroke();
             } else {
-                ctx.strokeStyle = '#ea580c'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#ea580c'; ctx.lineWidth = 8; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(20, 22);
-                let backArmX = 20 - Math.sin(-armSwing) * 14;
-                let backArmY = 22 + Math.cos(-armSwing) * 14;
-                ctx.lineTo(backArmX, backArmY); ctx.lineTo(backArmX - 5, backArmY + 8); ctx.stroke();
+                ctx.moveTo(24, 25);
+                let backArmX = 24 - Math.sin(-armSwing) * 16;
+                let backArmY = 25 + Math.cos(-armSwing) * 16;
+                ctx.lineTo(backArmX, backArmY); ctx.lineTo(backArmX - 6, backArmY + 10); ctx.stroke();
 
-                ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 12; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(20, 40);
-                let backKneeX = 20 + Math.sin(-legSwing) * 16;
-                let backKneeY = 40 + Math.cos(-legSwing) * 16;
-                ctx.lineTo(backKneeX, backKneeY); ctx.lineTo(backKneeX - Math.sin(-legSwing) * 10, backKneeY + 14); ctx.stroke();
+                ctx.moveTo(24, 46);
+                let backKneeX = 24 + Math.sin(-legSwing) * 18;
+                let backKneeY = 46 + Math.cos(-legSwing) * 18;
+                ctx.lineTo(backKneeX, backKneeY); ctx.lineTo(backKneeX - Math.sin(-legSwing) * 12, backKneeY + 16); ctx.stroke();
 
-                let shirtGrad = ctx.createLinearGradient(8, 18, 30, 40);
+                let shirtGrad = ctx.createLinearGradient(10, 20, 35, 48);
                 shirtGrad.addColorStop(0, '#ea580c'); shirtGrad.addColorStop(0.7, '#f97316'); shirtGrad.addColorStop(1, '#c2410c');
                 ctx.fillStyle = shirtGrad;
-                ctx.beginPath(); ctx.moveTo(8, 20); ctx.lineTo(28, 20); ctx.lineTo(24, 42); ctx.lineTo(12, 42); ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(10, 24); ctx.lineTo(34, 24); ctx.lineTo(28, 50); ctx.lineTo(14, 50); ctx.closePath(); ctx.fill();
 
-                ctx.fillStyle = '#fed7aa'; ctx.fillRect(16, 14, 6, 6);
+                ctx.fillStyle = '#fed7aa'; ctx.fillRect(18, 16, 8, 8);
 
-                let headGrad = ctx.createRadialGradient(19, 9, 2, 19, 9, 9.5);
+                let headGrad = ctx.createRadialGradient(22, 10, 2, 22, 10, 11);
                 headGrad.addColorStop(0, '#ffedd5'); headGrad.addColorStop(1, '#fed7aa');
                 ctx.fillStyle = headGrad;
-                ctx.beginPath(); ctx.arc(19, 9, 9.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(22, 10, 11, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath(); ctx.arc(19, 7, 9.8, Math.PI * 0.8, Math.PI * 2.1); ctx.fill();
+                ctx.beginPath(); ctx.arc(22, 8, 11.2, Math.PI * 0.8, Math.PI * 2.1); ctx.fill();
 
-                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 10.5; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 12.5; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(20, 40);
-                let frontKneeX = 20 + Math.sin(legSwing) * 16;
-                let frontKneeY = 40 + Math.cos(legSwing) * 16;
-                ctx.lineTo(frontKneeX, frontKneeY); ctx.lineTo(frontKneeX - Math.sin(legSwing) * 10, frontKneeY + 14); ctx.stroke();
+                ctx.moveTo(24, 46);
+                let frontKneeX = 24 + Math.sin(legSwing) * 18;
+                let frontKneeY = 46 + Math.cos(legSwing) * 18;
+                ctx.lineTo(frontKneeX, frontKneeY); ctx.lineTo(frontKneeX - Math.sin(legSwing) * 12, frontKneeY + 16); ctx.stroke();
 
                 ctx.fillStyle = '#38bdf8';
-                ctx.beginPath(); ctx.ellipse(frontKneeX - Math.sin(legSwing) * 10 + 2, frontKneeY + 14, 7, 3.5, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(frontKneeX - Math.sin(legSwing) * 12 + 2, frontKneeY + 16, 8, 4, 0, 0, Math.PI * 2); ctx.fill();
 
-                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 7.5; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 9; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(20, 20);
-                let frontArmX = 20 - Math.sin(armSwing) * 14;
-                let frontArmY = 20 + Math.cos(armSwing) * 14;
-                ctx.lineTo(frontArmX, frontArmY); ctx.lineTo(frontArmX + 5, frontArmY + 8); ctx.stroke();
+                ctx.moveTo(24, 24);
+                let frontArmX = 24 - Math.sin(armSwing) * 16;
+                let frontArmY = 24 + Math.cos(armSwing) * 16;
+                ctx.lineTo(frontArmX, frontArmY); ctx.lineTo(frontArmX + 6, frontArmY + 10); ctx.stroke();
             }
+
+            ctx.restore();
+        }
+
+        function drawCoin(x, y, animFrame) {
+            ctx.save();
+            ctx.translate(x, y);
+            let scaleX = Math.abs(Math.sin(animFrame * 0.1));
+            ctx.scale(scaleX, 1);
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(0, 0, 14, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#d97706';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🪙', 0, 0);
 
             ctx.restore();
         }
@@ -573,35 +604,35 @@
             ctx.save();
             ctx.translate(x, y);
 
-            let scaleX = width / 35;
-            let scaleY = height / 22;
+            let scaleX = width / 40;
+            let scaleY = height / 25;
             ctx.scale(scaleX, scaleY);
 
-            let wingFlap = Math.sin(animFrame * 0.3) * 14;
+            let wingFlap = Math.sin(animFrame * 0.3) * 16;
 
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
-            ctx.beginPath(); ctx.ellipse(15, 55, 12, 4, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(18, 60, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
 
-            let bodyGrad = ctx.createLinearGradient(0, 5, 24, 15);
+            let bodyGrad = ctx.createLinearGradient(0, 5, 28, 18);
             bodyGrad.addColorStop(0, '#22c55e'); bodyGrad.addColorStop(0.6, '#16a34a'); bodyGrad.addColorStop(1, '#15803d');
             ctx.fillStyle = bodyGrad;
-            ctx.beginPath(); ctx.ellipse(15, 10, 15, 6, -0.1, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(18, 12, 18, 7, -0.1, 0, Math.PI * 2); ctx.fill();
 
             ctx.fillStyle = '#0d9488';
-            ctx.beginPath(); ctx.moveTo(26, 11); ctx.lineTo(40, 16); ctx.lineTo(28, 13); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(30, 13); ctx.lineTo(46, 18); ctx.lineTo(32, 15); ctx.closePath(); ctx.fill();
 
-            let wingGrad = ctx.createLinearGradient(10, 8, 22, 8 - wingFlap);
+            let wingGrad = ctx.createLinearGradient(12, 10, 26, 10 - wingFlap);
             wingGrad.addColorStop(0, '#f59e0b'); wingGrad.addColorStop(0.5, '#10b981'); wingGrad.addColorStop(1, '#0284c7');
             ctx.fillStyle = wingGrad;
-            ctx.beginPath(); ctx.moveTo(10, 8); ctx.quadraticCurveTo(18, 8 - wingFlap * 1.3, 25, 4 - wingFlap); ctx.quadraticCurveTo(18, 12, 12, 14); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(12, 10); ctx.quadraticCurveTo(21, 10 - wingFlap * 1.3, 29, 5 - wingFlap); ctx.quadraticCurveTo(21, 14, 14, 16); ctx.closePath(); ctx.fill();
 
             ctx.fillStyle = '#ef4444';
-            ctx.beginPath(); ctx.moveTo(3, 8); ctx.quadraticCurveTo(-4, 10, -2, 15); ctx.lineTo(3, 12); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(4, 10); ctx.quadraticCurveTo(-5, 12, -2, 18); ctx.lineTo(4, 14); ctx.closePath(); ctx.fill();
 
             ctx.fillStyle = '#ffffff';
-            ctx.beginPath(); ctx.arc(6, 8, 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(7, 10, 3, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#0f172a';
-            ctx.beginPath(); ctx.arc(5.5, 8, 1.2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(6.5, 10, 1.4, 0, Math.PI * 2); ctx.fill();
 
             ctx.restore();
         }
@@ -616,15 +647,15 @@
             ctx.fillRect(0, 0, width, height);
 
             ctx.fillStyle = '#d97706';
-            ctx.fillRect(0, 0, width, 5); ctx.fillRect(0, height - 5, width, 5);
-            ctx.fillRect(0, 0, 5, height); ctx.fillRect(width - 5, 0, 5, height);
+            ctx.fillRect(0, 0, width, 6); ctx.fillRect(0, height - 6, width, 6);
+            ctx.fillRect(0, 0, 6, height); ctx.fillRect(width - 6, 0, 6, height);
 
             ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(2, 2, 2, 2); ctx.fillRect(width - 4, 2, 2, 2);
-            ctx.fillRect(2, height - 4, 2, 2); ctx.fillRect(width - 4, height - 4, 2, 2);
+            ctx.fillRect(3, 3, 3, 3); ctx.fillRect(width - 6, 3, 3, 3);
+            ctx.fillRect(3, height - 6, 3, 3); ctx.fillRect(width - 6, height - 6, 3, 3);
 
-            ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.moveTo(2, 2); ctx.lineTo(width - 2, height - 2); ctx.moveTo(width - 2, 2); ctx.lineTo(2, height - 2); ctx.stroke();
+            ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3.5;
+            ctx.beginPath(); ctx.moveTo(3, 3); ctx.lineTo(width - 3, height - 3); ctx.moveTo(width - 3, 3); ctx.lineTo(3, height - 3); ctx.stroke();
 
             ctx.restore();
         }
@@ -633,27 +664,31 @@
             if (!gameStarted || isPaused) return;
 
             if (gameOver) {
-                playSound(120, 'sawtooth', 0.4);
+                playSound(150, 'sawtooth', 0.4);
                 if (score > highScore) {
                     highScore = score;
                     localStorage.setItem('runner_highscore', highScore);
                 }
+                localStorage.setItem('runner_coins', coins);
 
-                ctx.fillStyle = 'rgba(11, 15, 25, 0.88)';
+                ctx.fillStyle = 'rgba(11, 15, 25, 0.9)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.fillStyle = '#facc15';
-                ctx.font = 'bold 28px Arial';
+                ctx.font = 'bold 36px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20);
+                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 40);
 
                 ctx.fillStyle = '#38bdf8';
-                ctx.font = 'bold 16px Arial';
-                ctx.fillText('High Score: ' + highScore, canvas.width / 2, canvas.height / 2 + 15);
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('Score: ' + score + ' | High: ' + highScore, canvas.width / 2, canvas.height / 2);
+
+                ctx.fillStyle = '#22c55e';
+                ctx.fillText('Total Coins 🪙: ' + coins, canvas.width / 2, canvas.height / 2 + 40);
 
                 ctx.fillStyle = '#94a3b8';
-                ctx.font = '13px Arial';
-                ctx.fillText('Tap JUMP / Space to Play Again', canvas.width / 2, canvas.height / 2 + 50);
+                ctx.font = '15px Arial';
+                ctx.fillText('Tap JUMP to Play Again', canvas.width / 2, canvas.height / 2 + 85);
                 ctx.textAlign = 'left';
                 return;
             }
@@ -662,13 +697,12 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             frame++;
-
             level = Math.floor(score / 300) + 1;
 
             updateWeatherLogic();
             drawDynamicWeather();
 
-            let groundY = canvas.height * 0.60;
+            let groundY = canvas.height * 0.65;
             let playerFloorY = groundY - player.height;
 
             player.dy += player.gravity;
@@ -680,23 +714,45 @@
                 player.isJumping = false;
             }
 
-            let currentY = player.isDucking ? player.y + 25 : player.y;
+            let currentY = player.isDucking ? player.y + 30 : player.y;
             drawHumanRunner(player.x, currentY, player.isDucking, player.isJumping, frame);
 
             spawnTimer++;
-            if (spawnTimer > Math.max(45, 95 - (gameSpeed * 3))) {
-                let isBird = Math.random() > 0.45;
-                if (isBird) {
-                    let heights = [groundY - 80, groundY - 55, groundY - 30];
-                    let chosenHeight = heights[Math.floor(Math.random() * heights.length)];
-                    obstacles.push({ x: canvas.width, y: chosenHeight, width: 60, height: 32, type: 'bird' });
+            if (spawnTimer > Math.max(45, 90 - (gameSpeed * 3))) {
+                let randType = Math.random();
+                if (randType > 0.55) {
+                    let heights = [groundY - 105, groundY - 75];
+                    obstacles.push({ x: canvas.width, y: heights[Math.floor(Math.random() * heights.length)], width: 70, height: 38, type: 'bird' });
+                } else if (randType > 0.25) {
+                    obstacles.push({ x: canvas.width, y: groundY - 60, width: 75, height: 60, type: 'crate' });
                 } else {
-                    obstacles.push({ x: canvas.width, y: groundY - 50, width: 65, height: 50, type: 'crate' });
+                    for(let c = 0; c < 3; c++) {
+                        collectibleCoins.push({ x: canvas.width + (c * 35), y: groundY - 110, collected: false });
+                    }
                 }
                 spawnTimer = 0;
             }
 
-            let currentHeight = player.isDucking ? 40 : 75;
+            let currentHeight = player.isDucking ? 45 : 85;
+
+            for (let i = 0; i < collectibleCoins.length; i++) {
+                let coin = collectibleCoins[i];
+                coin.x -= gameSpeed;
+                if (!coin.collected) {
+                    drawCoin(coin.x, coin.y, frame);
+                    if (
+                        player.x < coin.x + 15 &&
+                        player.x + player.width > coin.x - 15 &&
+                        currentY < coin.y + 15 &&
+                        currentY + currentHeight > coin.y - 15
+                    ) {
+                        coin.collected = true;
+                        coins += 10;
+                        playSound(800, 'sine', 0.08);
+                    }
+                }
+            }
+            collectibleCoins = collectibleCoins.filter(c => c.x + 20 > 0 && !c.collected);
 
             for (let i = 0; i < obstacles.length; i++) {
                 let obs = obstacles[i];
@@ -723,16 +779,17 @@
             score++;
 
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 14px Arial';
-            ctx.fillText('Score: ' + score, canvas.width - 110, 22);
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('Score: ' + score, canvas.width - 150, 30);
             ctx.fillStyle = '#facc15';
-            ctx.fillText('High: ' + highScore, canvas.width - 110, 40);
+            ctx.fillText('🪙 Coins: ' + coins, canvas.width - 150, 55);
 
             let currName = weathers[currentWeatherIdx].name;
             ctx.fillStyle = '#38bdf8';
-            ctx.fillText(`Lvl ${level} | Weather: ${currName}`, 12, 22);
+            ctx.fillText(`Lvl ${level} | ${currName}`, 20, 30);
 
-            gameSpeed += 0.0012;
+            let speedMult = weathers[currentWeatherIdx].speedMult || 1.0;
+            gameSpeed += 0.0012 * speedMult;
         }
     </script>
 </body>
