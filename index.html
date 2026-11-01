@@ -13,24 +13,26 @@
             -webkit-user-select: none;
         }
 
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             background-color: #0b0f19;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
+            justify-content: space-between;
             touch-action: manipulation;
         }
 
         header {
             text-align: center;
-            padding: 4px 10px;
+            padding: 4px 5px;
+            width: 100%;
             z-index: 10;
         }
 
@@ -39,35 +41,37 @@
             color: #38bdf8; 
             text-transform: uppercase; 
             letter-spacing: 1px; 
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); 
-            font-size: clamp(0.9rem, 3.5vw, 1.3rem);
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); 
+            font-size: clamp(0.85rem, 3.5vw, 1.2rem);
         }
         h3 { 
             margin: 0; 
             color: #facc15; 
-            text-shadow: 0 0 6px rgba(250, 204, 21, 0.4); 
-            font-size: clamp(0.65rem, 2vw, 0.8rem);
+            text-shadow: 0 0 5px rgba(250, 204, 21, 0.4); 
+            font-size: clamp(0.6rem, 2.2vw, 0.75rem);
         }
 
         #game-wrapper {
             position: relative;
             width: 100vw;
-            flex-grow: 1;
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 4px;
+            padding: 2px;
+            overflow: hidden;
         }
 
         #gameCanvas {
             border: 2px solid #38bdf8;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
-            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
             width: 100% !important;
             height: 100% !important;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: fill;
+            max-width: 800px;
+            max-height: 450px;
+            object-fit: contain;
+            background: #0b0f19;
         }
 
         /* UI Overlays */
@@ -77,41 +81,42 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(11, 15, 25, 0.92);
+            background: rgba(11, 15, 25, 0.94);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 30;
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 10px;
+            padding: 10px;
             text-align: center;
         }
 
         .overlay-screen h2 {
             color: #facc15;
-            font-size: 22px;
-            margin-bottom: 12px;
+            font-size: clamp(1rem, 4vw, 1.3rem);
+            margin-bottom: 8px;
             text-transform: uppercase;
         }
 
         .select-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            max-width: 90%;
         }
 
         .btn-ui {
-            padding: 8px 14px;
+            padding: 6px 10px;
             background: #1e293b;
             border: 2px solid #38bdf8;
             color: #fff;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 11px;
         }
 
         .btn-ui.active {
@@ -120,58 +125,58 @@
         }
 
         .btn-start {
-            padding: 12px 30px;
+            padding: 10px 24px;
             background: #22c55e;
             border: none;
             color: #fff;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: bold;
             border-radius: 8px;
-            box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
             cursor: pointer;
         }
 
         #btn-pause {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 8px;
+            right: 8px;
             z-index: 25;
-            padding: 6px 12px;
+            padding: 4px 10px;
             background: rgba(30, 41, 59, 0.85);
             border: 1px solid #38bdf8;
             color: #fff;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
         }
 
         /* In-Canvas Overlay Controls */
         .controls-overlay {
             position: absolute;
-            bottom: 12px;
+            bottom: 8px;
             left: 0;
             width: 100%;
-            padding: 0 15px;
+            padding: 0 10px;
             display: flex;
             justify-content: space-between;
-            gap: 20px;
+            gap: 12px;
             z-index: 20;
-            pointer-events: none; /* Allows canvas clicks if needed, buttons will enable pointer */
+            pointer-events: none;
         }
 
         .btn-touch {
             flex: 1;
-            padding: 12px 0;
-            background: rgba(30, 41, 59, 0.75);
+            padding: 10px 0;
+            background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(4px);
-            border: 2px solid rgba(56, 189, 248, 0.8);
-            border-radius: 10px;
+            border: 2px solid rgba(56, 189, 248, 0.85);
+            border-radius: 8px;
             color: #ffffff;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
             pointer-events: auto;
         }
 
@@ -236,12 +241,10 @@
         }
 
         function resizeCanvasResolution() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width || 800;
-            canvas.height = rect.height || 500;
+            canvas.width = 800;
+            canvas.height = 450;
         }
-        window.addEventListener('resize', resizeCanvasResolution);
-        setTimeout(resizeCanvasResolution, 100);
+        resizeCanvasResolution();
 
         let score = 0;
         let highScore = localStorage.getItem('runner_highscore') || 0;
@@ -266,10 +269,10 @@
         let lightning = false;
 
         let particles = [];
-        for (let i = 0; i < 60; i++) {
+        for (let i = 0; i < 50; i++) {
             particles.push({
                 x: Math.random() * 800,
-                y: Math.random() * 600,
+                y: Math.random() * 450,
                 speedY: Math.random() * 8 + 4,
                 speedX: Math.random() * 2 - 1,
                 length: Math.random() * 12 + 8,
@@ -640,17 +643,17 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.fillStyle = '#facc15';
-                ctx.font = 'bold 32px Arial';
+                ctx.font = 'bold 28px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20);
 
                 ctx.fillStyle = '#38bdf8';
-                ctx.font = 'bold 18px Arial';
-                ctx.fillText('High Score: ' + highScore, canvas.width / 2, canvas.height / 2 + 20);
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('High Score: ' + highScore, canvas.width / 2, canvas.height / 2 + 15);
 
                 ctx.fillStyle = '#94a3b8';
-                ctx.font = '14px Arial';
-                ctx.fillText('Tap JUMP / Space to Play Again', canvas.width / 2, canvas.height / 2 + 60);
+                ctx.font = '13px Arial';
+                ctx.fillText('Tap JUMP / Space to Play Again', canvas.width / 2, canvas.height / 2 + 50);
                 ctx.textAlign = 'left';
                 return;
             }
@@ -720,14 +723,14 @@
             score++;
 
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 15px Arial';
-            ctx.fillText('Score: ' + score, canvas.width - 120, 25);
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Score: ' + score, canvas.width - 110, 22);
             ctx.fillStyle = '#facc15';
-            ctx.fillText('High: ' + highScore, canvas.width - 120, 45);
+            ctx.fillText('High: ' + highScore, canvas.width - 110, 40);
 
             let currName = weathers[currentWeatherIdx].name;
             ctx.fillStyle = '#38bdf8';
-            ctx.fillText(`Lvl ${level} | Weather: ${currName}`, 15, 25);
+            ctx.fillText(`Lvl ${level} | Weather: ${currName}`, 12, 22);
 
             gameSpeed += 0.0012;
         }
