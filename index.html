@@ -23,42 +23,17 @@
             height: 100dvh;
             overflow: hidden;
             touch-action: manipulation;
-        }
-
-        #game-wrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            overflow: hidden;
-            background: #0b0f19;
-        }
-
-        #gameCanvas {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
-            background: #0b0f19;
-        }
-
-        .top-bar {
-            position: absolute;
-            top: 10px;
-            left: 0;
-            width: 100%;
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-            z-index: 25;
-            pointer-events: none;
         }
 
-        .title-box {
-            text-align: left;
+        header {
+            text-align: center;
+            padding: 6px 10px;
+            z-index: 10;
+            width: 100%;
         }
 
         h1 { 
@@ -67,26 +42,37 @@
             text-transform: uppercase; 
             letter-spacing: 1px; 
             text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); 
-            font-size: clamp(0.85rem, 3.5vw, 1.1rem);
+            font-size: clamp(1rem, 4vw, 1.3rem);
         }
         h3 { 
             margin: 0; 
             color: #facc15; 
             text-shadow: 0 0 5px rgba(250, 204, 21, 0.4); 
-            font-size: clamp(0.55rem, 2vw, 0.7rem);
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
         }
 
-        #btn-pause {
-            pointer-events: auto;
-            padding: 6px 14px;
-            background: rgba(30, 41, 59, 0.85);
-            border: none;
-            color: #fff;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        #game-wrapper {
+            position: relative;
+            width: 100vw;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: #0b0f19;
+            padding: 5px;
+        }
+
+        #gameCanvas {
+            border: 2px solid #38bdf8;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: fill;
+            background: #0b0f19;
         }
 
         .overlay-screen {
@@ -188,48 +174,59 @@
         }
 
         .controls-overlay {
-            position: absolute;
-            bottom: 15px;
-            left: 0;
-            width: 100%;
-            padding: 0 15px;
+            width: 100vw;
+            padding: 8px 15px 12px 15px;
             display: flex;
             justify-content: space-between;
-            gap: 20px;
+            gap: 15px;
             z-index: 20;
-            pointer-events: none;
+            background: #0b0f19;
         }
 
         .btn-touch {
             flex: 1;
             padding: 14px 0;
-            background: rgba(30, 41, 59, 0.65);
-            backdrop-filter: blur(6px);
+            background: rgba(30, 41, 59, 0.85);
             border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 14px;
+            border-radius: 12px;
             color: #ffffff;
             font-size: 22px;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            pointer-events: auto;
         }
 
         .btn-touch:active {
-            background: rgba(56, 189, 248, 0.5);
+            background: #38bdf8;
+            color: #0b0f19;
             transform: scale(0.96);
+        }
+
+        #btn-pause {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 12px;
+            background: rgba(30, 41, 59, 0.85);
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 25;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
 
+    <header>
+        <h1>Endless Runner</h1>
+        <h3>Dev: Muhammad Abdullah</h3>
+    </header>
+
     <div id="game-wrapper">
-        <div class="top-bar">
-            <div class="title-box">
-                <h1>Endless Runner</h1>
-                <h3>Dev: Muhammad Abdullah</h3>
-            </div>
-            <button id="btn-pause" style="display:none;">⏸</button>
-        </div>
+        <button id="btn-pause" style="display:none;">⏸</button>
 
         <!-- Start Menu Overlay -->
         <div id="menu-overlay" class="overlay-screen">
@@ -269,11 +266,11 @@
         </div>
 
         <canvas id="gameCanvas"></canvas>
+    </div>
 
-        <div class="controls-overlay">
-            <div class="btn-touch" id="btn-duck">👇</div>
-            <div class="btn-touch" id="btn-jump">🏃‍♂️</div>
-        </div>
+    <div class="controls-overlay">
+        <div class="btn-touch" id="btn-duck">👇</div>
+        <div class="btn-touch" id="btn-jump">🏃‍♂️</div>
     </div>
 
     <script>
@@ -300,11 +297,12 @@
         }
 
         function resizeCanvasResolution() {
-            canvas.width = window.innerWidth * window.devicePixelRatio;
-            canvas.height = window.innerHeight * window.devicePixelRatio;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width || 500;
+            canvas.height = rect.height || 800;
         }
         window.addEventListener('resize', resizeCanvasResolution);
-        resizeCanvasResolution();
+        setTimeout(resizeCanvasResolution, 100);
 
         let score = 0;
         let coins = parseInt(localStorage.getItem('runner_coins')) || 0;
@@ -367,6 +365,7 @@
         let gameOver = false;
         let isPaused = false;
         let gameStarted = false;
+        let baseGameSpeed = 5.5;
         let gameSpeed = 5.5;
         let frame = 0;
         let selectedMode = 'AUTO';
@@ -386,8 +385,8 @@
         let particles = [];
         for (let i = 0; i < 60; i++) {
             particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
+                x: Math.random() * 500,
+                y: Math.random() * 800,
                 speedY: Math.random() * 8 + 4,
                 speedX: Math.random() * 2 - 1,
                 length: Math.random() * 15 + 10,
@@ -396,16 +395,16 @@
         }
 
         let clouds = [
-            { x: 100, y: 50, z: 0.5, r: 30 },
-            { x: 400, y: 80, z: 0.8, r: 45 },
-            { x: 700, y: 40, z: 0.4, r: 25 }
+            { x: 50, y: 50, z: 0.5, r: 30 },
+            { x: 250, y: 80, z: 0.8, r: 45 },
+            { x: 400, y: 40, z: 0.4, r: 25 }
         ];
 
         const player = {
-            x: 80,
+            x: 60,
             y: 0,
-            width: 60,
-            height: 85,
+            width: 55,
+            height: 75,
             dy: 0,
             gravity: 0.6,
             jumpForce: -13,
@@ -438,6 +437,14 @@
             resetGame();
         }
 
+        function returnToMenu() {
+            gameOver = false;
+            gameStarted = false;
+            btnPause.style.display = 'none';
+            document.getElementById('menu-coins').innerText = coins;
+            menuOverlay.style.display = 'flex';
+        }
+
         btnPause.addEventListener('click', () => {
             if (!gameStarted || gameOver) return;
             isPaused = !isPaused;
@@ -466,11 +473,15 @@
         });
         btnDuck.addEventListener('touchend', (e) => { e.preventDefault(); player.isDucking = false; });
 
-        canvas.addEventListener('mousedown', jump);
-
         function jump() {
             if (!player.isJumping && !gameOver && !player.isDucking && gameStarted && !isPaused) {
-                player.dy = player.jumpForce;
+                let currentJumpPower = player.jumpForce;
+                if (currentChar === 1) { 
+                    currentJumpPower = -15.5; // Ninja Higher Jump
+                } else if (currentChar === 2) { 
+                    currentJumpPower = -14; // Pro Lightning Quick Jump
+                }
+                player.dy = currentJumpPower;
                 player.isJumping = true;
                 playSound(400, 'triangle', 0.15);
             } else if (gameOver) {
@@ -481,7 +492,7 @@
         function resetGame() {
             score = 0;
             level = 1;
-            gameSpeed = 5.5;
+            baseGameSpeed = 5.5;
             obstacles = [];
             collectibleCoins = [];
             gameOver = false;
@@ -609,11 +620,11 @@
             ctx.translate(x, y);
 
             let shirtColor1 = '#ea580c', shirtColor2 = '#f97316';
-            if (currentChar === 1) { shirtColor1 = '#1e293b'; shirtColor2 = '#0f172a'; }
-            else if (currentChar === 2) { shirtColor1 = '#eab308'; shirtColor2 = '#ca8a04'; }
+            if (currentChar === 1) { shirtColor1 = '#1e293b'; shirtColor2 = '#0f172a'; } 
+            else if (currentChar === 2) { shirtColor1 = '#eab308'; shirtColor2 = '#ca8a04'; } 
 
             let isRunning = !isJumping && !isDucking;
-            let cycle = isRunning ? Math.sin(animFrame * 0.35) : 0;
+            let cycle = isRunning ? Math.sin(animFrame * (currentChar === 2 ? 0.5 : 0.35)) : 0;
             
             let legSwing = cycle * 0.6;
             let armSwing = cycle * 0.7;
@@ -800,18 +811,26 @@
                 ctx.fillStyle = '#facc15';
                 ctx.font = 'bold 36px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 40);
+                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 60);
 
                 ctx.fillStyle = '#38bdf8';
                 ctx.font = 'bold 20px Arial';
-                ctx.fillText('Score: ' + score + ' | High: ' + highScore, canvas.width / 2, canvas.height / 2);
+                ctx.fillText('Score: ' + score + ' | High: ' + highScore, canvas.width / 2, canvas.height / 2 - 20);
 
                 ctx.fillStyle = '#22c55e';
-                ctx.fillText('Total Coins 🪙: ' + coins, canvas.width / 2, canvas.height / 2 + 40);
+                ctx.fillText('Total Coins 🪙: ' + coins, canvas.width / 2, canvas.height / 2 + 20);
+
+                // Back to Menu Button Box drawn inside canvas
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(canvas.width / 2 - 110, canvas.height / 2 + 65, 220, 45);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('🔙 BACK TO MENU', canvas.width / 2, canvas.height / 2 + 93);
 
                 ctx.fillStyle = '#94a3b8';
-                ctx.font = '15px Arial';
-                ctx.fillText('Tap JUMP to Play Again', canvas.width / 2, canvas.height / 2 + 85);
+                ctx.font = '14px Arial';
+                ctx.fillText('Tap JUMP to Play Again', canvas.width / 2, canvas.height / 2 + 130);
+
                 ctx.textAlign = 'left';
                 return;
             }
@@ -841,7 +860,7 @@
             drawHumanRunner(player.x, currentY, player.isDucking, player.isJumping, frame);
 
             spawnTimer++;
-            if (spawnTimer > Math.max(45, 90 - (gameSpeed * 3))) {
+            if (spawnTimer > Math.max(40, 85 - (gameSpeed * 3))) {
                 let randType = Math.random();
                 if (randType > 0.55) {
                     let heights = [groundY - 105, groundY - 75];
@@ -911,9 +930,33 @@
             ctx.fillStyle = '#38bdf8';
             ctx.fillText(`Lvl ${level} | ${currName}`, 20, 30);
 
+            let charSpeedMultiplier = 1.0;
+            if (currentChar === 2) {
+                charSpeedMultiplier = 1.25; // Pro Lightning Fast Speed
+            }
+
             let speedMult = weathers[currentWeatherIdx].speedMult || 1.0;
-            gameSpeed += 0.0012 * speedMult;
+            gameSpeed = (baseGameSpeed + (score * 0.0012)) * speedMult * charSpeedMultiplier;
         }
+
+        canvas.addEventListener('click', (e) => {
+            if (gameOver) {
+                const rect = canvas.getBoundingClientRect();
+                const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+                if (
+                    clickX >= canvas.width / 2 - 110 &&
+                    clickX <= canvas.width / 2 + 110 &&
+                    clickY >= canvas.height / 2 + 65 &&
+                    clickY <= canvas.height / 2 + 110
+                ) {
+                    returnToMenu();
+                } else {
+                    resetGame();
+                }
+            }
+        });
     </script>
 </body>
 </html>
