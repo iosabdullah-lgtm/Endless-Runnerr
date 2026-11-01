@@ -314,19 +314,18 @@
         setTimeout(resizeCanvasResolution, 100);
 
         let score = 0;
-        let coins = parseInt(localStorage.getItem('runner_coins')) || 1000; // Testing ke liye coins rakhe hain taake easily check kar sako
+        let coins = parseInt(localStorage.getItem('runner_coins')) || 1000; 
         let highScore = localStorage.getItem('runner_highscore') || 0;
         let currentChar = parseInt(localStorage.getItem('runner_current_char')) || 0;
 
-        // Powers Inventory / Active State
         let powers = {
-            shield: parseInt(localStorage.getItem('pow_shield')) || 0,
-            magnet: parseInt(localStorage.getItem('pow_magnet')) || 0,
-            revive: parseInt(localStorage.getItem('pow_revive')) || 0,
-            turbo: parseInt(localStorage.getItem('pow_turbo')) || 0,
-            doublejump: parseInt(localStorage.getItem('pow_doublejump')) || 0,
-            slow: parseInt(localStorage.getItem('pow_slow')) || 0,
-            multiplier: parseInt(localStorage.getItem('pow_multiplier')) || 0
+            shield: 0,
+            magnet: 0,
+            revive: 0,
+            turbo: 0,
+            doublejump: 0,
+            slow: 0,
+            multiplier: 0
         };
 
         let activeShield = false;
@@ -341,7 +340,8 @@
         let hasRevive = false;
 
         let isMiniBossActive = false;
-        let bossHealth = 100;
+        let bossTimer = 0; // Meteor shower duration timer (60 frames = 1 second)
+        let meteorDurationBonus = 0; // Har 1500 points ke baad 2 seconds (120 frames) ka addition
         let meteors = [];
 
         document.getElementById('menu-coins').innerText = coins;
@@ -384,13 +384,12 @@
                 }
             }
 
-            // Update powers button labels based on ownership
             let pKeys = ['shield', 'magnet', 'revive', 'turbo', 'doublejump', 'slow', 'multiplier'];
             let costs = [50, 75, 150, 60, 80, 90, 100];
             pKeys.forEach((k, idx) => {
                 let btn = document.getElementById('pow-' + k);
                 if(powers[k] > 0) {
-                    btn.innerText = 'Active / Owned';
+                    btn.innerText = 'Active ✔';
                     btn.style.background = '#22c55e';
                 } else {
                     btn.innerText = `${costs[idx]} 🪙`;
@@ -420,26 +419,24 @@
 
         function buyPower(type, cost) {
             if(powers[type] > 0) {
-                alert("Power is already owned/active for the next run!");
+                alert("Power is already active for this run!");
                 return;
             }
             if(coins >= cost) {
                 coins -= cost;
                 powers[type] = 1;
                 localStorage.setItem('runner_coins', coins);
-                localStorage.setItem('pow_' + type, 1);
                 playSound(800, 'sine', 0.2);
                 
-                // Assign power effects for the game session
-                if(type === 'shield') { activeShield = true; shieldTimer = 500; }
+                if(type === 'shield') { activeShield = true; shieldTimer = 300; }
                 else if(type === 'magnet') { activeMagnet = true; }
                 else if(type === 'revive') { hasRevive = true; }
                 else if(type === 'turbo') { activeTurbo = true; }
                 else if(type === 'doublejump') { hasDoubleJumpPower = true; }
-                else if(type === 'slow') { activeSlow = true; slowTimer = 400; }
+                else if(type === 'slow') { activeSlow = true; slowTimer = 300; }
                 else if(type === 'multiplier') { activeMultiplier = true; }
 
-                alert(`Successfully equipped ${type.toUpperCase()}!`);
+                alert(`Successfully bought & activated ${type.toUpperCase()}!`);
             } else {
                 playSound(150, 'sawtooth', 0.2);
                 alert("Not enough coins!");
@@ -516,6 +513,15 @@
             gameOver = false;
             gameStarted = false;
             btnPause.style.display = 'none';
+            Object.keys(powers).forEach(k => powers[k] = 0);
+            activeShield = false;
+            activeMagnet = false;
+            activeTurbo = false;
+            activeSlow = false;
+            activeMultiplier = false;
+            hasDoubleJumpPower = false;
+            hasRevive = false;
+
             document.getElementById('menu-coins').innerText = coins;
             menuOverlay.style.display = 'flex';
         }
@@ -552,19 +558,21 @@
                     let currentJumpPower = player.jumpForce;
                     if (currentChar === 1) { currentJumpPower = -15.5; } 
                     else if (currentChar === 2) { currentJumpPower = -14; }
+                    
+                    if (activeSlow) { currentJumpPower *= 0.75; }
+
                     player.dy = currentJumpPower;
                     player.isJumping = true;
                     player.jumpCount = 1;
                     if(hasDoubleJumpPower) canDoubleJump = true;
                     playSound(400, 'triangle', 0.15);
                 } else if (player.isJumping && canDoubleJump && hasDoubleJumpPower) {
-                    // Double Jump Execution
                     let currentJumpPower = player.jumpForce * 0.85;
+                    if (activeSlow) { currentJumpPower *= 0.75; }
                     player.dy = currentJumpPower;
                     canDoubleJump = false;
-                    hasDoubleJumpPower = false; // Consume power after use
-                    powers.doublejump = 0;
-                    localStorage.setItem('pow_doublejump', 0);
+                    hasDoubleJumpPower = false; 
+                    powers.doublejump = 0; 
                     playSound(600, 'triangle', 0.15);
                 }
             } else if (gameOver) {
@@ -580,7 +588,8 @@
             collectibleCoins = [];
             meteors = [];
             isMiniBossActive = false;
-            bossHealth = 100;
+            bossTimer = 0;
+            meteorDurationBonus = 0;
             gameOver = false;
             isPaused = false;
             btnPause.innerText = '⏸ Pause / Store';
@@ -597,17 +606,25 @@
 
         function triggerGameOverOrRevive() {
             if (hasRevive) {
-                hasRevive = false; // Consume revive power
+                hasRevive = false; 
                 powers.revive = 0;
-                localStorage.setItem('pow_revive', 0);
                 activeShield = true;
-                shieldTimer = 300; // Give temporary shield on revive
-                obstacles = []; // Clear obstacles to give breathing room
+                shieldTimer = 300; 
+                obstacles = []; 
                 meteors = [];
                 playSound(950, 'sine', 0.4);
-                alert("💖 Revive Power Used! You got a second chance!");
+                alert("💖 Revive Power Used! Second chance granted!");
                 return;
             }
+
+            Object.keys(powers).forEach(k => powers[k] = 0);
+            activeShield = false;
+            activeMagnet = false;
+            activeTurbo = false;
+            activeSlow = false;
+            activeMultiplier = false;
+            hasDoubleJumpPower = false;
+            hasRevive = false;
 
             gameOver = true;
         }
@@ -685,9 +702,10 @@
             ctx.fillStyle = groundGrad;
             ctx.fillRect(0, skyHeight, canvas.width, groundHeight);
 
+            let timeFactor = activeSlow ? 0.4 : 1.0;
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 2;
-            let offset = (frame * gameSpeed) % 50;
+            let offset = (frame * gameSpeed * timeFactor) % 50;
             for (let x = -offset; x < canvas.width; x += 50) {
                 ctx.beginPath();
                 ctx.moveTo(x, skyHeight + 5);
@@ -705,7 +723,8 @@
             else if (currentChar === 2) { shirtColor1 = '#eab308'; shirtColor2 = '#ca8a04'; } 
 
             let isRunning = !isJumping && !isDucking;
-            let cycle = isRunning ? Math.sin(animFrame * (currentChar === 2 ? 0.5 : 0.35)) : 0;
+            let animSpeedFactor = activeSlow ? 0.15 : (currentChar === 2 ? 0.5 : 0.35);
+            let cycle = isRunning ? Math.sin(animFrame * animSpeedFactor) : 0;
             
             let legSwing = cycle * 0.6;
             let armSwing = cycle * 0.7;
@@ -905,20 +924,22 @@
                 slowTimer--;
                 if(slowTimer <= 0) {
                     activeSlow = false;
-                    powers.slow = 0; // Consume power
-                    localStorage.setItem('pow_slow', 0);
+                    powers.slow = 0; 
                 }
             }
 
-            if (score > 0 && score % 500 === 0 && !isMiniBossActive) {
+            // Har 1500 points ke baad Meteor Shower trigger hoga (Duration 15s + 2s har dafa barhegi)
+            if (score > 0 && score % 1500 === 0 && !isMiniBossActive) {
                 isMiniBossActive = true;
-                bossHealth = 100;
+                bossTimer = (15 + meteorDurationBonus) * 60; // 15 secs base + accumulated bonus (60 fps)
+                meteorDurationBonus += 2; // Agli dafa ke liye 2 seconds mazeed barh jayenge
+                obstacles = []; // Ground ke saare obstacles/birds remove kar diye taake sirf meteors rahein!
                 playSound(300, 'sawtooth', 0.6);
             }
 
             if (isMiniBossActive) {
-                bossHealth -= 0.25;
-                if (bossHealth <= 0) {
+                bossTimer--;
+                if (bossTimer <= 0) {
                     isMiniBossActive = false;
                     coins += 50;
                     playSound(900, 'sine', 0.4);
@@ -966,6 +987,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             frame++;
+            let timeFactor = activeSlow ? 0.4 : 1.0;
             let pointIncrement = activeMultiplier ? 2 : 1;
             score += pointIncrement;
             level = Math.floor(score / 300) + 1;
@@ -976,8 +998,9 @@
             let groundY = canvas.height * 0.65;
             let playerFloorY = groundY - player.height;
 
-            player.dy += player.gravity;
-            player.y += player.dy;
+            let effectiveGravity = activeSlow ? player.gravity * 0.4 : player.gravity;
+            player.dy += effectiveGravity;
+            player.y += player.dy * timeFactor;
 
             if (player.y > playerFloorY) {
                 player.y = playerFloorY;
@@ -991,8 +1014,10 @@
             spawnTimer++;
             let spawnLimit = isMiniBossActive ? 22 : Math.max(40, 85 - (gameSpeed * 3));
             if (spawnTimer > spawnLimit) {
-                if (isMiniBossActive && Math.random() < 0.7) {
-                    meteors.push({ x: Math.random() * (canvas.width - 100) + 50, y: -20, speed: 8 });
+                if (isMiniBossActive) {
+                    if (Math.random() < 0.8) {
+                        meteors.push({ x: Math.random() * (canvas.width - 100) + 50, y: -20, speed: 8 });
+                    }
                 } else {
                     let randType = Math.random();
                     if (randType > 0.55) {
@@ -1016,8 +1041,7 @@
                 if (activeMagnet && coin.x > player.x - 150 && coin.x < player.x + 250) {
                     coin.x += (player.x - coin.x) * 0.15;
                 }
-                let effectiveSpeed = activeSlow ? gameSpeed * 0.4 : gameSpeed;
-                coin.x -= effectiveSpeed;
+                coin.x -= gameSpeed * timeFactor;
 
                 if (!coin.collected) {
                     drawCoin(coin.x, coin.y, frame);
@@ -1037,10 +1061,8 @@
 
             for (let i = 0; i < meteors.length; i++) {
                 let m = meteors[i];
-                let effectiveMeteorSpeed = activeSlow ? m.speed * 0.4 : m.speed;
-                m.y += effectiveMeteorSpeed;
-                let effectiveGameSpeed = activeSlow ? gameSpeed * 0.4 : gameSpeed;
-                m.x -= effectiveGameSpeed * 0.4;
+                m.y += m.speed * timeFactor;
+                m.x -= gameSpeed * 0.4 * timeFactor;
                 drawMeteor(m.x, m.y);
 
                 if (
@@ -1060,62 +1082,73 @@
             }
             meteors = meteors.filter(m => m.y < groundY + 20);
 
-            for (let i = 0; i < obstacles.length; i++) {
-                let obs = obstacles[i];
-                let currentObsSpeed = activeSlow ? gameSpeed * 0.4 : gameSpeed;
-                obs.x -= currentObsSpeed;
+            if (!isMiniBossActive) {
+                for (let i = 0; i < obstacles.length; i++) {
+                    let obs = obstacles[i];
+                    obs.x -= gameSpeed * timeFactor; 
 
-                if (obs.type === 'crate') {
-                    draw3DCrate(obs.x, obs.y, obs.width, obs.height);
-                } else {
-                    drawRealisticParrot(obs.x, obs.y, frame, obs.width, obs.height);
-                }
-
-                if (
-                    player.x < obs.x + obs.width &&
-                    player.x + player.width > obs.x &&
-                    currentY < obs.y + obs.height &&
-                    currentY + currentHeight > obs.y
-                ) {
-                    if(activeShield) {
-                        activeShield = false;
-                        obstacles.splice(i, 1);
-                        playSound(300, 'square', 0.3);
+                    if (obs.type === 'crate') {
+                        draw3DCrate(obs.x, obs.y, obs.width, obs.height);
                     } else {
-                        triggerGameOverOrRevive();
+                        drawRealisticParrot(obs.x, obs.y, frame, obs.width, obs.height);
+                    }
+
+                    if (
+                        player.x < obs.x + obs.width &&
+                        player.x + player.width > obs.x &&
+                        currentY < obs.y + obs.height &&
+                        currentY + currentHeight > obs.y
+                    ) {
+                        if(activeShield) {
+                            activeShield = false;
+                            obstacles.splice(i, 1);
+                            playSound(300, 'square', 0.3);
+                        } else {
+                            triggerGameOverOrRevive();
+                        }
                     }
                 }
+                obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
             }
 
-            obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
-
+            // === Score & UI Positioned at Center Top ===
+            ctx.save();
+            ctx.textAlign = 'center';
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 16px Arial';
-            ctx.fillText('Score: ' + score, canvas.width - 150, 30);
+            ctx.fillText('Score: ' + score, canvas.width / 2, 30);
             ctx.fillStyle = '#facc15';
-            ctx.fillText('🪙 Coins: ' + coins, canvas.width - 150, 55);
+            ctx.fillText('🪙 Coins: ' + coins, canvas.width / 2, 55);
+            ctx.restore();
 
             if(activeShield) {
                 ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 14px Arial';
                 ctx.fillText('🛡️ SHIELD', 20, 55);
             }
             if(activeSlow) {
                 ctx.fillStyle = '#f43f5e';
+                ctx.font = 'bold 14px Arial';
                 ctx.fillText('🛑 SLOW MOTION', 20, 80);
             }
 
             if(isMiniBossActive) {
                 ctx.fillStyle = '#ef4444';
-                ctx.font = 'bold 16px Arial';
-                ctx.fillText('⚔️ MINI BOSS FIGHT!', canvas.width / 2 - 75, 30);
+                ctx.font = 'bold 15px Arial';
+                ctx.textAlign = 'center';
+                let remainingSecs = Math.ceil(bossTimer / 60);
+                ctx.fillText(`⚔️ METEOR SHOWER! (${remainingSecs}s)`, canvas.width / 2, 85);
                 
                 ctx.fillStyle = '#334155';
-                ctx.fillRect(canvas.width / 2 - 80, 40, 160, 12);
+                ctx.fillRect(canvas.width / 2 - 80, 95, 160, 10);
                 ctx.fillStyle = '#22c55e';
-                ctx.fillRect(canvas.width / 2 - 80, 40, (bossHealth / 100) * 160, 12);
+                let maxDurationFrames = (15 + (meteorDurationBonus - 2)) * 60;
+                ctx.fillRect(canvas.width / 2 - 80, 95, (bossTimer / maxDurationFrames) * 160, 10);
+                ctx.textAlign = 'left';
             } else {
                 let currName = weathers[currentWeatherIdx].name;
                 ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 14px Arial';
                 ctx.fillText(`Lvl ${level} | ${currName}`, 20, 30);
             }
 
@@ -1129,9 +1162,6 @@
 
             let speedMult = weathers[currentWeatherIdx].speedMult || 1.0;
             gameSpeed = (baseGameSpeed + (score * 0.0012)) * speedMult * charSpeedMultiplier;
-            if (activeSlow) {
-                gameSpeed *= 0.4;
-            }
         }
 
         canvas.addEventListener('click', (e) => {
