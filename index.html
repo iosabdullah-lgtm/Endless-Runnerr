@@ -13,26 +13,52 @@
             -webkit-user-select: none;
         }
 
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             background-color: #0b0f19;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
+            width: 100vw;
             height: 100vh;
             height: 100dvh;
-            width: 100vw;
             overflow: hidden;
             touch-action: manipulation;
         }
 
-        header {
-            text-align: center;
-            padding: 6px 10px 2px 10px;
-            z-index: 10;
+        #game-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: #0b0f19;
+        }
+
+        #gameCanvas {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            background: #0b0f19;
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 25;
+            pointer-events: none;
+        }
+
+        .title-box {
+            text-align: left;
         }
 
         h1 { 
@@ -40,35 +66,27 @@
             color: #38bdf8; 
             text-transform: uppercase; 
             letter-spacing: 1px; 
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); 
-            font-size: clamp(1rem, 4vw, 1.5rem);
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); 
+            font-size: clamp(0.85rem, 3.5vw, 1.1rem);
         }
         h3 { 
             margin: 0; 
             color: #facc15; 
-            text-shadow: 0 0 6px rgba(250, 204, 21, 0.4); 
-            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+            text-shadow: 0 0 5px rgba(250, 204, 21, 0.4); 
+            font-size: clamp(0.55rem, 2vw, 0.7rem);
         }
 
-        #game-wrapper {
-            position: relative;
-            width: 100vw;
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 4px;
-        }
-
-        #gameCanvas {
-            border: 2px solid #38bdf8;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
-            border-radius: 12px;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: fill;
+        #btn-pause {
+            pointer-events: auto;
+            padding: 6px 14px;
+            background: rgba(30, 41, 59, 0.85);
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .overlay-screen {
@@ -169,60 +187,49 @@
             border-color: #22c55e;
         }
 
-        /* Mobile Touch Controls Overlay */
         .controls-overlay {
-            width: 100vw;
-            padding: 10px 16px 16px 16px;
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            padding: 0 15px;
             display: flex;
             justify-content: space-between;
-            gap: 15px;
+            gap: 20px;
             z-index: 20;
+            pointer-events: none;
         }
 
         .btn-touch {
             flex: 1;
             padding: 14px 0;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: none;
-            border-radius: 10px;
+            background: rgba(30, 41, 59, 0.65);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 14px;
             color: #ffffff;
-            font-size: 20px;
+            font-size: 22px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            pointer-events: auto;
         }
 
         .btn-touch:active {
-            background: #38bdf8;
-            color: #0f172a;
-            transform: scale(0.98);
-        }
-
-        #btn-pause {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 6px 12px;
-            background: rgba(30, 41, 59, 0.85);
-            border: none;
-            color: #fff;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            z-index: 25;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: rgba(56, 189, 248, 0.5);
+            transform: scale(0.96);
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Endless Runner</h1>
-        <h3>Dev: Muhammad Abdullah</h3>
-    </header>
-
     <div id="game-wrapper">
-        <button id="btn-pause" style="display:none;">⏸</button>
+        <div class="top-bar">
+            <div class="title-box">
+                <h1>Endless Runner</h1>
+                <h3>Dev: Muhammad Abdullah</h3>
+            </div>
+            <button id="btn-pause" style="display:none;">⏸</button>
+        </div>
 
         <!-- Start Menu Overlay -->
         <div id="menu-overlay" class="overlay-screen">
@@ -262,11 +269,11 @@
         </div>
 
         <canvas id="gameCanvas"></canvas>
-    </div>
 
-    <div class="controls-overlay">
-        <div class="btn-touch" id="btn-duck">👇</div>
-        <div class="btn-touch" id="btn-jump">🏃‍♂️</div>
+        <div class="controls-overlay">
+            <div class="btn-touch" id="btn-duck">👇</div>
+            <div class="btn-touch" id="btn-jump">🏃‍♂️</div>
+        </div>
     </div>
 
     <script>
@@ -293,12 +300,11 @@
         }
 
         function resizeCanvasResolution() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width || 800;
-            canvas.height = rect.height || 500;
+            canvas.width = window.innerWidth * window.devicePixelRatio;
+            canvas.height = window.innerHeight * window.devicePixelRatio;
         }
         window.addEventListener('resize', resizeCanvasResolution);
-        setTimeout(resizeCanvasResolution, 100);
+        resizeCanvasResolution();
 
         let score = 0;
         let coins = parseInt(localStorage.getItem('runner_coins')) || 0;
@@ -367,9 +373,9 @@
 
         const weathers = [
             { name: 'SUMMER', skyTop: [56, 189, 248], skyBot: [2, 132, 199], groundTop: [22, 197, 94], rain: 0, snow: 0, speedMult: 1.0 },
-            { name: 'RAINY', skyTop: [71, 85, 105], skyBot: [30, 41, 59], groundTop: [21, 128, 61], rain: 1.2, snow: 0, speedMult: 1.1 },
-            { name: 'STORM', skyTop: [15, 23, 42], skyBot: [2, 6, 23], groundTop: [15, 23, 42], rain: 2.0, snow: 0, speedMult: 1.25 },
-            { name: 'WINTER', skyTop: [148, 163, 184], skyBot: [71, 85, 105], groundTop: [241, 245, 249], rain: 0, snow: 1.5, speedMult: 0.9 }
+            { name: 'RAINY', skyTop: [71, 85, 105], skyBot: [30, 41, 59], groundTop: [21, 128, 61], rain: 1, snow: 0, speedMult: 1.05 },
+            { name: 'STORM', skyTop: [15, 23, 42], skyBot: [2, 6, 23], groundTop: [15, 23, 42], rain: 1.5, snow: 0, speedMult: 1.15 },
+            { name: 'WINTER', skyTop: [148, 163, 184], skyBot: [71, 85, 105], groundTop: [241, 245, 249], rain: 0, snow: 1, speedMult: 0.95 }
         ];
 
         let currentWeatherIdx = 0;
@@ -380,8 +386,8 @@
         let particles = [];
         for (let i = 0; i < 60; i++) {
             particles.push({
-                x: Math.random() * 800,
-                y: Math.random() * 500,
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
                 speedY: Math.random() * 8 + 4,
                 speedX: Math.random() * 2 - 1,
                 length: Math.random() * 15 + 10,
@@ -396,13 +402,13 @@
         ];
 
         const player = {
-            x: 60,
+            x: 80,
             y: 0,
-            width: 55,
-            height: 75,
+            width: 60,
+            height: 85,
             dy: 0,
             gravity: 0.6,
-            jumpForce: -12,
+            jumpForce: -13,
             isJumping: false,
             isDucking: false
         };
@@ -501,7 +507,7 @@
 
         function updateWeatherLogic() {
             if (selectedMode === 'AUTO') {
-                transitionFactor += 0.0008;
+                transitionFactor += 0.0005;
                 if (transitionFactor >= 1) {
                     transitionFactor = 0;
                     currentWeatherIdx = nextWeatherIdx;
@@ -512,7 +518,7 @@
             }
 
             let curr = weathers[currentWeatherIdx];
-            if (curr.name === 'STORM' && Math.random() < 0.04) {
+            if (curr.name === 'STORM' && Math.random() < 0.02) {
                 lightning = true;
             } else {
                 lightning = false;
@@ -520,8 +526,8 @@
         }
 
         function drawDynamicWeather() {
-            let skyHeight = canvas.height * 0.60;
-            let groundHeight = canvas.height * 0.40;
+            let skyHeight = canvas.height * 0.65;
+            let groundHeight = canvas.height * 0.35;
 
             if (lightning) {
                 ctx.fillStyle = '#ffffff';
@@ -562,11 +568,11 @@
 
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 2;
-            let offset = (frame * gameSpeed) % 40;
-            for (let x = -offset; x < canvas.width; x += 40) {
+            let offset = (frame * gameSpeed) % 50;
+            for (let x = -offset; x < canvas.width; x += 50) {
                 ctx.beginPath();
                 ctx.moveTo(x, skyHeight + 5);
-                ctx.lineTo(x - 20, canvas.height);
+                ctx.lineTo(x - 25, canvas.height);
                 ctx.stroke();
             }
 
@@ -574,10 +580,10 @@
             let currentSnow = curr.snow + (next.snow - curr.snow) * transitionFactor;
 
             if (currentRain > 0.05) {
-                ctx.strokeStyle = `rgba(186, 230, 253, ${Math.min(currentRain, 0.9)})`;
-                ctx.lineWidth = currentRain > 1.5 ? 3 : 1.8;
+                ctx.strokeStyle = `rgba(186, 230, 253, ${Math.min(currentRain, 0.85)})`;
+                ctx.lineWidth = currentRain > 1 ? 2.5 : 1.5;
                 particles.forEach(p => {
-                    p.y += p.speedY + (currentRain > 1.5 ? 6 : 2);
+                    p.y += p.speedY + (currentRain > 1 ? 4 : 0);
                     p.x += p.speedX - 2;
                     if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
                     ctx.beginPath();
@@ -586,13 +592,13 @@
                     ctx.stroke();
                 });
             } else if (currentSnow > 0.05) {
-                ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(currentSnow, 0.95)})`;
+                ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(currentSnow, 0.9)})`;
                 particles.forEach(p => {
-                    p.y += p.speedY * 0.4;
-                    p.x += Math.sin(frame * 0.05 + p.y) * 2;
+                    p.y += p.speedY * 0.3;
+                    p.x += Math.sin(frame * 0.05 + p.y) * 1.5;
                     if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size + 1, 0, Math.PI * 2);
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fill();
                 });
             }
@@ -615,78 +621,78 @@
             let shadowAlpha = isJumping ? 0.15 : 0.4;
             ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
             ctx.beginPath(); 
-            ctx.ellipse(24, isDucking ? 50 : 72, 26, 7, 0, 0, Math.PI * 2); 
+            ctx.ellipse(28, isDucking ? 60 : 82, 30, 8, 0, 0, Math.PI * 2); 
             ctx.fill();
 
             if (isDucking) {
-                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 8; ctx.lineCap = 'round';
-                ctx.beginPath(); ctx.moveTo(12, 32); ctx.lineTo(0, 46); ctx.lineTo(10, 48); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(12, 32); ctx.lineTo(22, 46); ctx.lineTo(32, 48); ctx.stroke();
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(14, 38); ctx.lineTo(0, 56); ctx.lineTo(12, 58); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(14, 38); ctx.lineTo(26, 56); ctx.lineTo(38, 58); ctx.stroke();
                 
-                let torsoGrad = ctx.createLinearGradient(0, 18, 28, 32);
+                let torsoGrad = ctx.createLinearGradient(0, 20, 32, 38);
                 torsoGrad.addColorStop(0, shirtColor1); torsoGrad.addColorStop(1, shirtColor2);
                 ctx.fillStyle = torsoGrad;
-                ctx.beginPath(); ctx.ellipse(18, 26, 17, 10, -0.4, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(20, 30, 20, 12, -0.4, 0, Math.PI * 2); ctx.fill();
 
-                let headGrad = ctx.createRadialGradient(28, 16, 2, 28, 16, 9);
+                let headGrad = ctx.createRadialGradient(32, 18, 2, 32, 18, 11);
                 headGrad.addColorStop(0, '#ffedd5'); headGrad.addColorStop(1, '#fed7aa');
                 ctx.fillStyle = headGrad;
-                ctx.beginPath(); ctx.arc(28, 16, 9, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(32, 18, 11, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath(); ctx.arc(28, 14, 9, Math.PI, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(32, 16, 11, Math.PI, Math.PI * 2); ctx.fill();
 
-                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 7;
-                ctx.beginPath(); ctx.moveTo(16, 22); ctx.lineTo(28, 30); ctx.stroke();
+                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 8;
+                ctx.beginPath(); ctx.moveTo(18, 26); ctx.lineTo(32, 35); ctx.stroke();
             } else {
-                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 7; ctx.lineCap = 'round';
+                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 8; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(20, 22);
-                let backArmX = 20 - Math.sin(-armSwing) * 14;
-                let backArmY = 22 + Math.cos(-armSwing) * 14;
-                ctx.lineTo(backArmX, backArmY); ctx.lineTo(backArmX - 5, backArmY + 8); ctx.stroke();
+                ctx.moveTo(24, 25);
+                let backArmX = 24 - Math.sin(-armSwing) * 16;
+                let backArmY = 25 + Math.cos(-armSwing) * 16;
+                ctx.lineTo(backArmX, backArmY); ctx.lineTo(backArmX - 6, backArmY + 10); ctx.stroke();
 
-                ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 10; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 12; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(20, 40);
-                let backKneeX = 20 + Math.sin(-legSwing) * 16;
-                let backKneeY = 40 + Math.cos(-legSwing) * 16;
-                ctx.lineTo(backKneeX, backKneeY); ctx.lineTo(backKneeX - Math.sin(-legSwing) * 10, backKneeY + 14); ctx.stroke();
+                ctx.moveTo(24, 46);
+                let backKneeX = 24 + Math.sin(-legSwing) * 18;
+                let backKneeY = 46 + Math.cos(-legSwing) * 18;
+                ctx.lineTo(backKneeX, backKneeY); ctx.lineTo(backKneeX - Math.sin(-legSwing) * 12, backKneeY + 16); ctx.stroke();
 
-                let shirtGrad = ctx.createLinearGradient(8, 18, 30, 40);
+                let shirtGrad = ctx.createLinearGradient(10, 20, 35, 48);
                 shirtGrad.addColorStop(0, shirtColor1);
                 shirtGrad.addColorStop(0.7, shirtColor2);
                 shirtGrad.addColorStop(1, '#0f172a');
                 ctx.fillStyle = shirtGrad;
-                ctx.beginPath(); ctx.moveTo(8, 20); ctx.lineTo(28, 20); ctx.lineTo(24, 42); ctx.lineTo(12, 42); ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(10, 24); ctx.lineTo(34, 24); ctx.lineTo(28, 50); ctx.lineTo(14, 50); ctx.closePath(); ctx.fill();
 
-                ctx.fillStyle = '#fed7aa'; ctx.fillRect(16, 14, 6, 6);
+                ctx.fillStyle = '#fed7aa'; ctx.fillRect(18, 16, 8, 8);
 
-                let headGrad = ctx.createRadialGradient(19, 9, 2, 19, 9, 9.5);
+                let headGrad = ctx.createRadialGradient(22, 10, 2, 22, 10, 11);
                 headGrad.addColorStop(0, '#ffedd5');
                 headGrad.addColorStop(1, '#fed7aa');
                 ctx.fillStyle = headGrad;
-                ctx.beginPath(); ctx.arc(19, 9, 9.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(22, 10, 11, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath(); ctx.arc(19, 7, 9.8, Math.PI * 0.8, Math.PI * 2.1); ctx.fill();
+                ctx.beginPath(); ctx.arc(22, 8, 11.2, Math.PI * 0.8, Math.PI * 2.1); ctx.fill();
 
-                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 10.5; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 12.5; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(20, 40);
-                let frontKneeX = 20 + Math.sin(legSwing) * 16;
-                let frontKneeY = 40 + Math.cos(legSwing) * 16;
-                ctx.lineTo(frontKneeX, frontKneeY); ctx.lineTo(frontKneeX - Math.sin(legSwing) * 10, frontKneeY + 14); ctx.stroke();
+                ctx.moveTo(24, 46);
+                let frontKneeX = 24 + Math.sin(legSwing) * 18;
+                let frontKneeY = 46 + Math.cos(legSwing) * 18;
+                ctx.lineTo(frontKneeX, frontKneeY); ctx.lineTo(frontKneeX - Math.sin(legSwing) * 12, frontKneeY + 16); ctx.stroke();
 
                 ctx.fillStyle = '#38bdf8';
-                ctx.beginPath(); ctx.ellipse(frontKneeX - Math.sin(legSwing) * 10 + 2, frontKneeY + 14, 7, 3.5, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(frontKneeX - Math.sin(legSwing) * 12 + 2, frontKneeY + 16, 8, 4, 0, 0, Math.PI * 2); ctx.fill();
 
-                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 7.5; ctx.lineCap = 'round';
+                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 9; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(20, 20);
-                let frontArmX = 20 - Math.sin(armSwing) * 14;
-                let frontArmY = 20 + Math.cos(armSwing) * 14;
-                ctx.lineTo(frontArmX, frontArmY); ctx.lineTo(frontArmX + 5, frontArmY + 8); ctx.stroke();
+                ctx.moveTo(24, 24);
+                let frontArmX = 24 - Math.sin(armSwing) * 16;
+                let frontArmY = 24 + Math.cos(armSwing) * 16;
+                ctx.lineTo(frontArmX, frontArmY); ctx.lineTo(frontArmX + 6, frontArmY + 10); ctx.stroke();
             }
 
             ctx.restore();
@@ -721,35 +727,35 @@
             ctx.save();
             ctx.translate(x, y);
 
-            let scaleX = width / 35;
-            let scaleY = height / 22;
+            let scaleX = width / 40;
+            let scaleY = height / 25;
             ctx.scale(scaleX, scaleY);
 
-            let wingFlap = Math.sin(animFrame * 0.3) * 14;
+            let wingFlap = Math.sin(animFrame * 0.3) * 16;
 
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
-            ctx.beginPath(); ctx.ellipse(15, 55, 12, 4, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(18, 60, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
 
-            let bodyGrad = ctx.createLinearGradient(0, 5, 24, 15);
+            let bodyGrad = ctx.createLinearGradient(0, 5, 28, 18);
             bodyGrad.addColorStop(0, '#22c55e'); bodyGrad.addColorStop(0.6, '#16a34a'); bodyGrad.addColorStop(1, '#15803d');
             ctx.fillStyle = bodyGrad;
-            ctx.beginPath(); ctx.ellipse(15, 10, 15, 6, -0.1, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(18, 12, 18, 7, -0.1, 0, Math.PI * 2); ctx.fill();
 
             ctx.fillStyle = '#0d9488';
-            ctx.beginPath(); ctx.moveTo(26, 11); ctx.lineTo(40, 16); ctx.lineTo(28, 13); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(30, 13); ctx.lineTo(46, 18); ctx.lineTo(32, 15); ctx.closePath(); ctx.fill();
 
-            let wingGrad = ctx.createLinearGradient(10, 8, 22, 8 - wingFlap);
+            let wingGrad = ctx.createLinearGradient(12, 10, 26, 10 - wingFlap);
             wingGrad.addColorStop(0, '#f59e0b'); wingGrad.addColorStop(0.5, '#10b981'); wingGrad.addColorStop(1, '#0284c7');
             ctx.fillStyle = wingGrad;
-            ctx.beginPath(); ctx.moveTo(10, 8); ctx.quadraticCurveTo(18, 8 - wingFlap * 1.3, 25, 4 - wingFlap); ctx.quadraticCurveTo(18, 12, 12, 14); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(12, 10); ctx.quadraticCurveTo(21, 10 - wingFlap * 1.3, 29, 5 - wingFlap); ctx.quadraticCurveTo(21, 14, 14, 16); ctx.closePath(); ctx.fill();
 
             ctx.fillStyle = '#ef4444';
-            ctx.beginPath(); ctx.moveTo(3, 8); ctx.quadraticCurveTo(-4, 10, -2, 15); ctx.lineTo(3, 12); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(4, 10); ctx.quadraticCurveTo(-5, 12, -2, 18); ctx.lineTo(4, 14); ctx.closePath(); ctx.fill();
 
             ctx.fillStyle = '#ffffff';
-            ctx.beginPath(); ctx.arc(6, 8, 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(7, 10, 3, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#0f172a';
-            ctx.beginPath(); ctx.arc(5.5, 8, 1.2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(6.5, 10, 1.4, 0, Math.PI * 2); ctx.fill();
 
             ctx.restore();
         }
@@ -764,15 +770,15 @@
             ctx.fillRect(0, 0, width, height);
 
             ctx.fillStyle = '#d97706';
-            ctx.fillRect(0, 0, width, 5); ctx.fillRect(0, height - 5, width, 5);
-            ctx.fillRect(0, 0, 5, height); ctx.fillRect(width - 5, 0, 5, height);
+            ctx.fillRect(0, 0, width, 6); ctx.fillRect(0, height - 6, width, 6);
+            ctx.fillRect(0, 0, 6, height); ctx.fillRect(width - 6, 0, 6, height);
 
             ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(2, 2, 2, 2); ctx.fillRect(width - 4, 2, 2, 2);
-            ctx.fillRect(2, height - 4, 2, 2); ctx.fillRect(width - 4, height - 4, 2, 2);
+            ctx.fillRect(3, 3, 3, 3); ctx.fillRect(width - 6, 3, 3, 3);
+            ctx.fillRect(3, height - 6, 3, 3); ctx.fillRect(width - 6, height - 6, 3, 3);
 
-            ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.moveTo(2, 2); ctx.lineTo(width - 2, height - 2); ctx.moveTo(width - 2, 2); ctx.lineTo(2, height - 2); ctx.stroke();
+            ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3.5;
+            ctx.beginPath(); ctx.moveTo(3, 3); ctx.lineTo(width - 3, height - 3); ctx.moveTo(width - 3, 3); ctx.lineTo(3, height - 3); ctx.stroke();
 
             ctx.restore();
         }
@@ -819,7 +825,7 @@
             updateWeatherLogic();
             drawDynamicWeather();
 
-            let groundY = canvas.height * 0.60;
+            let groundY = canvas.height * 0.65;
             let playerFloorY = groundY - player.height;
 
             player.dy += player.gravity;
@@ -831,26 +837,26 @@
                 player.isJumping = false;
             }
 
-            let currentY = player.isDucking ? player.y + 25 : player.y;
+            let currentY = player.isDucking ? player.y + 30 : player.y;
             drawHumanRunner(player.x, currentY, player.isDucking, player.isJumping, frame);
 
             spawnTimer++;
             if (spawnTimer > Math.max(45, 90 - (gameSpeed * 3))) {
                 let randType = Math.random();
                 if (randType > 0.55) {
-                    let heights = [groundY - 85, groundY - 55];
-                    obstacles.push({ x: canvas.width, y: heights[Math.floor(Math.random() * heights.length)], width: 60, height: 32, type: 'bird' });
+                    let heights = [groundY - 105, groundY - 75];
+                    obstacles.push({ x: canvas.width, y: heights[Math.floor(Math.random() * heights.length)], width: 70, height: 38, type: 'bird' });
                 } else if (randType > 0.25) {
-                    obstacles.push({ x: canvas.width, y: groundY - 50, width: 65, height: 50, type: 'crate' });
+                    obstacles.push({ x: canvas.width, y: groundY - 60, width: 75, height: 60, type: 'crate' });
                 } else {
                     for(let c = 0; c < 3; c++) {
-                        collectibleCoins.push({ x: canvas.width + (c * 35), y: groundY - 90, collected: false });
+                        collectibleCoins.push({ x: canvas.width + (c * 35), y: groundY - 110, collected: false });
                     }
                 }
                 spawnTimer = 0;
             }
 
-            let currentHeight = player.isDucking ? 40 : 75;
+            let currentHeight = player.isDucking ? 45 : 85;
 
             for (let i = 0; i < collectibleCoins.length; i++) {
                 let coin = collectibleCoins[i];
