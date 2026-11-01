@@ -262,13 +262,13 @@
                 </div>
 
                 <p style="color:#38bdf8; font-weight:bold; font-size:13px; text-align:left; margin-top:8px;">7 Heavy Special Powers:</p>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">🛡️ Shield (5s Invincible)</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('shield', 50)">50 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">🧲 Coin Magnet</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('magnet', 75)">75 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">💖 Revive (Second Chance)</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('revive', 150)">150 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">⚡ Turbo Speed Boost</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('turbo', 60)">60 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">🪂 Double Jump Power</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('doublejump', 80)">80 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">🛑 Time Slow Motion</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('slow', 90)">90 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">💎 2x Score Multiplier</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('multiplier', 100)">100 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">🛡️ Shield (5s Invincible)</span><button class="btn-ui" style="padding:4px 10px;" id="pow-shield" onclick="buyPower('shield', 50)">50 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">🧲 Coin Magnet</span><button class="btn-ui" style="padding:4px 10px;" id="pow-magnet" onclick="buyPower('magnet', 75)">75 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">💖 Revive (Second Chance)</span><button class="btn-ui" style="padding:4px 10px;" id="pow-revive" onclick="buyPower('revive', 150)">150 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">⚡ Turbo Speed Boost</span><button class="btn-ui" style="padding:4px 10px;" id="pow-turbo" onclick="buyPower('turbo', 60)">60 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">🪂 Double Jump Power</span><button class="btn-ui" style="padding:4px 10px;" id="pow-doublejump" onclick="buyPower('doublejump', 80)">80 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">🛑 Time Slow Motion</span><button class="btn-ui" style="padding:4px 10px;" id="pow-slow" onclick="buyPower('slow', 90)">90 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">💎 2x Score Multiplier</span><button class="btn-ui" style="padding:4px 10px;" id="pow-multiplier" onclick="buyPower('multiplier', 100)">100 🪙</button></div>
             </div>
 
             <button class="btn-main" onclick="closeStore()">🔙 RESUME / MENU</button>
@@ -314,16 +314,32 @@
         setTimeout(resizeCanvasResolution, 100);
 
         let score = 0;
-        let coins = parseInt(localStorage.getItem('runner_coins')) || 0;
+        let coins = parseInt(localStorage.getItem('runner_coins')) || 1000; // Testing ke liye coins rakhe hain taake easily check kar sako
         let highScore = localStorage.getItem('runner_highscore') || 0;
         let currentChar = parseInt(localStorage.getItem('runner_current_char')) || 0;
+
+        // Powers Inventory / Active State
+        let powers = {
+            shield: parseInt(localStorage.getItem('pow_shield')) || 0,
+            magnet: parseInt(localStorage.getItem('pow_magnet')) || 0,
+            revive: parseInt(localStorage.getItem('pow_revive')) || 0,
+            turbo: parseInt(localStorage.getItem('pow_turbo')) || 0,
+            doublejump: parseInt(localStorage.getItem('pow_doublejump')) || 0,
+            slow: parseInt(localStorage.getItem('pow_slow')) || 0,
+            multiplier: parseInt(localStorage.getItem('pow_multiplier')) || 0
+        };
 
         let activeShield = false;
         let shieldTimer = 0;
         let activeMagnet = false;
         let activeTurbo = false;
         let activeSlow = false;
+        let slowTimer = 0;
         let activeMultiplier = false;
+        let hasDoubleJumpPower = false;
+        let canDoubleJump = false;
+        let hasRevive = false;
+
         let isMiniBossActive = false;
         let bossHealth = 100;
         let meteors = [];
@@ -367,9 +383,24 @@
                     btn.style.background = '#1e293b';
                 }
             }
+
+            // Update powers button labels based on ownership
+            let pKeys = ['shield', 'magnet', 'revive', 'turbo', 'doublejump', 'slow', 'multiplier'];
+            let costs = [50, 75, 150, 60, 80, 90, 100];
+            pKeys.forEach((k, idx) => {
+                let btn = document.getElementById('pow-' + k);
+                if(powers[k] > 0) {
+                    btn.innerText = 'Active / Owned';
+                    btn.style.background = '#22c55e';
+                } else {
+                    btn.innerText = `${costs[idx]} 🪙`;
+                    btn.style.background = '#1e293b';
+                }
+            });
         }
 
         function buyAndSelectCharacter(index, price) {
+            if(currentChar === index) return;
             if(price === 0 || coins >= price) {
                 if(price > 0) {
                     coins -= price;
@@ -385,27 +416,35 @@
                 alert("Not enough coins!");
             }
             updateStoreUI();
-            document.getElementById('store-coins').innerText = coins;
-            document.getElementById('menu-coins').innerText = coins;
         }
 
         function buyPower(type, cost) {
+            if(powers[type] > 0) {
+                alert("Power is already owned/active for the next run!");
+                return;
+            }
             if(coins >= cost) {
                 coins -= cost;
+                powers[type] = 1;
                 localStorage.setItem('runner_coins', coins);
+                localStorage.setItem('pow_' + type, 1);
                 playSound(800, 'sine', 0.2);
-                if(type === 'shield') { activeShield = true; shieldTimer = 300; alert("🛡️ Shield Activated!"); }
-                else if(type === 'magnet') { activeMagnet = true; alert("🧲 Coin Magnet Activated!"); }
-                else if(type === 'turbo') { activeTurbo = true; alert("⚡ Turbo Speed Activated!"); }
-                else if(type === 'slow') { activeSlow = true; alert("🛑 Slow Motion Activated!"); }
-                else if(type === 'multiplier') { activeMultiplier = true; alert("💎 2x Multiplier Activated!"); }
-                else { alert("Power Purchased Successfully!"); }
+                
+                // Assign power effects for the game session
+                if(type === 'shield') { activeShield = true; shieldTimer = 500; }
+                else if(type === 'magnet') { activeMagnet = true; }
+                else if(type === 'revive') { hasRevive = true; }
+                else if(type === 'turbo') { activeTurbo = true; }
+                else if(type === 'doublejump') { hasDoubleJumpPower = true; }
+                else if(type === 'slow') { activeSlow = true; slowTimer = 400; }
+                else if(type === 'multiplier') { activeMultiplier = true; }
+
+                alert(`Successfully equipped ${type.toUpperCase()}!`);
             } else {
                 playSound(150, 'sawtooth', 0.2);
                 alert("Not enough coins!");
             }
-            document.getElementById('store-coins').innerText = coins;
-            document.getElementById('menu-coins').innerText = coins;
+            updateStoreUI();
         }
 
         let level = 1;
@@ -418,28 +457,16 @@
         let selectedMode = 'AUTO';
 
         const weathers = [
-            { name: 'SUMMER', skyTop: [56, 189, 248], skyBot: [2, 132, 199], groundTop: [22, 197, 94], rain: 0, snow: 0, speedMult: 1.0 },
-            { name: 'RAINY', skyTop: [71, 85, 105], skyBot: [30, 41, 59], groundTop: [21, 128, 61], rain: 1, snow: 0, speedMult: 1.05 },
-            { name: 'STORM', skyTop: [15, 23, 42], skyBot: [2, 6, 23], groundTop: [15, 23, 42], rain: 1.5, snow: 0, speedMult: 1.15 },
-            { name: 'WINTER', skyTop: [148, 163, 184], skyBot: [71, 85, 105], groundTop: [241, 245, 249], rain: 0, snow: 1, speedMult: 0.95 }
+            { name: 'SUMMER', skyTop: [56, 189, 248], skyBot: [2, 132, 199], groundTop: [22, 197, 94], speedMult: 1.0 },
+            { name: 'RAINY', skyTop: [71, 85, 105], skyBot: [30, 41, 59], groundTop: [21, 128, 61], speedMult: 1.05 },
+            { name: 'STORM', skyTop: [15, 23, 42], skyBot: [2, 6, 23], groundTop: [15, 23, 42], speedMult: 1.15 },
+            { name: 'WINTER', skyTop: [148, 163, 184], skyBot: [71, 85, 105], groundTop: [241, 245, 249], speedMult: 0.95 }
         ];
 
         let currentWeatherIdx = 0;
         let nextWeatherIdx = 1;
         let transitionFactor = 0;
         let lightning = false;
-
-        let particles = [];
-        for (let i = 0; i < 60; i++) {
-            particles.push({
-                x: Math.random() * 500,
-                y: Math.random() * 800,
-                speedY: Math.random() * 8 + 4,
-                speedX: Math.random() * 2 - 1,
-                length: Math.random() * 15 + 10,
-                size: Math.random() * 3 + 2
-            });
-        }
 
         let clouds = [
             { x: 50, y: 50, z: 0.5, r: 30 },
@@ -456,7 +483,8 @@
             gravity: 0.6,
             jumpForce: -13,
             isJumping: false,
-            isDucking: false
+            isDucking: false,
+            jumpCount: 0
         };
 
         let obstacles = [];
@@ -519,13 +547,26 @@
         btnDuck.addEventListener('touchend', (e) => { e.preventDefault(); player.isDucking = false; });
 
         function jump() {
-            if (!player.isJumping && !gameOver && !player.isDucking && gameStarted && !isPaused) {
-                let currentJumpPower = player.jumpForce;
-                if (currentChar === 1) { currentJumpPower = -15.5; } 
-                else if (currentChar === 2) { currentJumpPower = -14; }
-                player.dy = currentJumpPower;
-                player.isJumping = true;
-                playSound(400, 'triangle', 0.15);
+            if (!gameOver && gameStarted && !isPaused) {
+                if (!player.isJumping && !player.isDucking) {
+                    let currentJumpPower = player.jumpForce;
+                    if (currentChar === 1) { currentJumpPower = -15.5; } 
+                    else if (currentChar === 2) { currentJumpPower = -14; }
+                    player.dy = currentJumpPower;
+                    player.isJumping = true;
+                    player.jumpCount = 1;
+                    if(hasDoubleJumpPower) canDoubleJump = true;
+                    playSound(400, 'triangle', 0.15);
+                } else if (player.isJumping && canDoubleJump && hasDoubleJumpPower) {
+                    // Double Jump Execution
+                    let currentJumpPower = player.jumpForce * 0.85;
+                    player.dy = currentJumpPower;
+                    canDoubleJump = false;
+                    hasDoubleJumpPower = false; // Consume power after use
+                    powers.doublejump = 0;
+                    localStorage.setItem('pow_doublejump', 0);
+                    playSound(600, 'triangle', 0.15);
+                }
             } else if (gameOver) {
                 resetGame();
             }
@@ -552,6 +593,23 @@
             player.isJumping = false;
             player.isDucking = false;
             animate();
+        }
+
+        function triggerGameOverOrRevive() {
+            if (hasRevive) {
+                hasRevive = false; // Consume revive power
+                powers.revive = 0;
+                localStorage.setItem('pow_revive', 0);
+                activeShield = true;
+                shieldTimer = 300; // Give temporary shield on revive
+                obstacles = []; // Clear obstacles to give breathing room
+                meteors = [];
+                playSound(950, 'sine', 0.4);
+                alert("💖 Revive Power Used! You got a second chance!");
+                return;
+            }
+
+            gameOver = true;
         }
 
         function lerpColor(c1, c2, factor) {
@@ -843,6 +901,15 @@
                 if(shieldTimer <= 0) activeShield = false;
             }
 
+            if (activeSlow) {
+                slowTimer--;
+                if(slowTimer <= 0) {
+                    activeSlow = false;
+                    powers.slow = 0; // Consume power
+                    localStorage.setItem('pow_slow', 0);
+                }
+            }
+
             if (score > 0 && score % 500 === 0 && !isMiniBossActive) {
                 isMiniBossActive = true;
                 bossHealth = 100;
@@ -946,10 +1013,12 @@
 
             for (let i = 0; i < collectibleCoins.length; i++) {
                 let coin = collectibleCoins[i];
-                if (activeMagnet && coin.x > player.x - 120 && coin.x < player.x + 200) {
-                    coin.x += (player.x - coin.x) * 0.1;
+                if (activeMagnet && coin.x > player.x - 150 && coin.x < player.x + 250) {
+                    coin.x += (player.x - coin.x) * 0.15;
                 }
-                coin.x -= gameSpeed;
+                let effectiveSpeed = activeSlow ? gameSpeed * 0.4 : gameSpeed;
+                coin.x -= effectiveSpeed;
+
                 if (!coin.collected) {
                     drawCoin(coin.x, coin.y, frame);
                     if (
@@ -968,8 +1037,10 @@
 
             for (let i = 0; i < meteors.length; i++) {
                 let m = meteors[i];
-                m.y += m.speed;
-                m.x -= gameSpeed * 0.4;
+                let effectiveMeteorSpeed = activeSlow ? m.speed * 0.4 : m.speed;
+                m.y += effectiveMeteorSpeed;
+                let effectiveGameSpeed = activeSlow ? gameSpeed * 0.4 : gameSpeed;
+                m.x -= effectiveGameSpeed * 0.4;
                 drawMeteor(m.x, m.y);
 
                 if (
@@ -983,7 +1054,7 @@
                         meteors.splice(i, 1);
                         playSound(300, 'square', 0.3);
                     } else {
-                        gameOver = true;
+                        triggerGameOverOrRevive();
                     }
                 }
             }
@@ -991,7 +1062,7 @@
 
             for (let i = 0; i < obstacles.length; i++) {
                 let obs = obstacles[i];
-                let currentObsSpeed = activeSlow ? gameSpeed * 0.5 : gameSpeed;
+                let currentObsSpeed = activeSlow ? gameSpeed * 0.4 : gameSpeed;
                 obs.x -= currentObsSpeed;
 
                 if (obs.type === 'crate') {
@@ -1011,7 +1082,7 @@
                         obstacles.splice(i, 1);
                         playSound(300, 'square', 0.3);
                     } else {
-                        gameOver = true;
+                        triggerGameOverOrRevive();
                     }
                 }
             }
@@ -1027,6 +1098,10 @@
             if(activeShield) {
                 ctx.fillStyle = '#38bdf8';
                 ctx.fillText('🛡️ SHIELD', 20, 55);
+            }
+            if(activeSlow) {
+                ctx.fillStyle = '#f43f5e';
+                ctx.fillText('🛑 SLOW MOTION', 20, 80);
             }
 
             if(isMiniBossActive) {
@@ -1054,6 +1129,9 @@
 
             let speedMult = weathers[currentWeatherIdx].speedMult || 1.0;
             gameSpeed = (baseGameSpeed + (score * 0.0012)) * speedMult * charSpeedMultiplier;
+            if (activeSlow) {
+                gameSpeed *= 0.4;
+            }
         }
 
         canvas.addEventListener('click', (e) => {
