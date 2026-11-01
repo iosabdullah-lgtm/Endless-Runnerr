@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Weather Runner Pro - Dev: Muhammad Abdullah</title>
+    <title>Endless Runner - Dev: Muhammad Abdullah</title>
     <style>
         * {
             box-sizing: border-box;
@@ -138,7 +138,7 @@
             color: #0b0f19;
         }
 
-        .btn-start {
+        .btn-main {
             padding: 12px 30px;
             background: #22c55e;
             border: none;
@@ -148,7 +148,43 @@
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
             cursor: pointer;
-            margin-top: 5px;
+            margin-top: 8px;
+        }
+
+        .btn-store {
+            padding: 10px 25px;
+            background: #38bdf8;
+            border: none;
+            color: #0b0f19;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .store-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .store-card {
+            background: #1e293b;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #334155;
+        }
+
+        .store-card.selected {
+            border-color: #22c55e;
         }
 
         .controls-overlay {
@@ -189,12 +225,13 @@
     <div id="game-wrapper">
         <div class="top-bar">
             <div class="title-box">
-                <h1>3D Weather Runner</h1>
+                <h1>Endless Runner</h1>
                 <h3>Dev: Muhammad Abdullah</h3>
             </div>
             <button id="btn-pause" style="display:none;">⏸</button>
         </div>
 
+        <!-- Start Menu Overlay -->
         <div id="menu-overlay" class="overlay-screen">
             <h2>Select Weather Mode</h2>
             <div class="select-group">
@@ -204,7 +241,31 @@
                 <button class="btn-ui" onclick="setWeatherMode('STORM', this)">Storm ⚡</button>
                 <button class="btn-ui" onclick="setWeatherMode('WINTER', this)">Winter ❄️</button>
             </div>
-            <button class="btn-start" onclick="startGame()">START GAME 🚀</button>
+            <button class="btn-main" onclick="startGame()">START GAME 🚀</button>
+            <button class="btn-store" onclick="openStore()">🛍️ STORE (Coins: <span id="menu-coins">0</span>)</button>
+        </div>
+
+        <!-- Store Menu Overlay -->
+        <div id="store-overlay" class="overlay-screen" style="display:none;">
+            <h2>Character Store 🛍️</h2>
+            <p style="color: #facc15; margin-bottom: 10px;">Available Coins: 🪙 <span id="store-coins">0</span></p>
+            
+            <div class="store-items">
+                <div class="store-card" id="card-classic">
+                    <span style="color:#fff; font-weight:bold;">🏃‍♂️ Classic Runner</span>
+                    <button class="btn-ui active" style="padding:4px 10px;" id="btn-char-0" onclick="selectCharacter(0, 0)">Equipped</button>
+                </div>
+                <div class="store-card" id="card-ninja">
+                    <span style="color:#fff; font-weight:bold;">🥷 Ninja Runner</span>
+                    <button class="btn-ui" style="padding:4px 10px;" id="btn-char-1" onclick="buyOrSelectCharacter(1, 100)">100 🪙</button>
+                </div>
+                <div class="store-card" id="card-pro">
+                    <span style="color:#fff; font-weight:bold;">⚡ Pro Lightning</span>
+                    <button class="btn-ui" style="padding:4px 10px;" id="btn-char-2" onclick="buyOrSelectCharacter(2, 250)">250 🪙</button>
+                </div>
+            </div>
+
+            <button class="btn-main" onclick="closeStore()">🔙 BACK TO MENU</button>
         </div>
 
         <canvas id="gameCanvas"></canvas>
@@ -220,6 +281,7 @@
         const ctx = canvas.getContext('2d');
         const btnPause = document.getElementById('btn-pause');
         const menuOverlay = document.getElementById('menu-overlay');
+        const storeOverlay = document.getElementById('store-overlay');
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
@@ -238,15 +300,68 @@
         }
 
         function resizeCanvasResolution() {
-            canvas.width = window.innerWidth * window.devicePixelRatio;
-            canvas.height = window.innerHeight * window.devicePixelRatio;
+            canvas.width = 800;
+            canvas.height = 500;
         }
-        window.addEventListener('resize', resizeCanvasResolution);
         resizeCanvasResolution();
 
         let score = 0;
         let coins = parseInt(localStorage.getItem('runner_coins')) || 0;
         let highScore = localStorage.getItem('runner_highscore') || 0;
+        let unlockedChars = JSON.parse(localStorage.getItem('runner_unlocked')) || [true, false, false];
+        let currentChar = parseInt(localStorage.getItem('runner_current_char')) || 0;
+
+        document.getElementById('menu-coins').innerText = coins;
+
+        function openStore() {
+            document.getElementById('store-coins').innerText = coins;
+            updateStoreUI();
+            menuOverlay.style.display = 'none';
+            storeOverlay.style.display = 'flex';
+        }
+
+        function closeStore() {
+            storeOverlay.style.display = 'none';
+            menuOverlay.style.display = 'flex';
+            document.getElementById('menu-coins').innerText = coins;
+        }
+
+        function updateStoreUI() {
+            document.getElementById('store-coins').innerText = coins;
+            for(let i=0; i<3; i++) {
+                let btn = document.getElementById('btn-char-' + i);
+                if(currentChar === i) {
+                    btn.innerText = 'Equipped';
+                    btn.style.background = '#22c55e';
+                } else if(unlockedChars[i]) {
+                    btn.innerText = 'Select';
+                    btn.style.background = '#38bdf8';
+                } else {
+                    let cost = i === 1 ? 100 : 250;
+                    btn.innerText = cost + ' 🪙';
+                    btn.style.background = '#1e293b';
+                }
+            }
+        }
+
+        function buyOrSelectCharacter(index, price) {
+            if(unlockedChars[index]) {
+                currentChar = index;
+                localStorage.setItem('runner_current_char', currentChar);
+            } else if(coins >= price) {
+                coins -= price;
+                unlockedChars[index] = true;
+                currentChar = index;
+                localStorage.setItem('runner_coins', coins);
+                localStorage.setItem('runner_unlocked', JSON.stringify(unlockedChars));
+                localStorage.setItem('runner_current_char', currentChar);
+                playSound(600, 'sine', 0.2);
+            } else {
+                playSound(150, 'sawtooth', 0.2);
+            }
+            updateStoreUI();
+        }
+
         let level = 1;
         let gameOver = false;
         let isPaused = false;
@@ -270,8 +385,8 @@
         let particles = [];
         for (let i = 0; i < 60; i++) {
             particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
+                x: Math.random() * 800,
+                y: Math.random() * 500,
                 speedY: Math.random() * 8 + 4,
                 speedX: Math.random() * 2 - 1,
                 length: Math.random() * 15 + 10,
@@ -288,11 +403,11 @@
         const player = {
             x: 80,
             y: 0,
-            width: 60,
-            height: 85,
+            width: 55,
+            height: 75,
             dy: 0,
             gravity: 0.6,
-            jumpForce: -13,
+            jumpForce: -12,
             isJumping: false,
             isDucking: false
         };
@@ -410,8 +525,8 @@
         }
 
         function drawDynamicWeather() {
-            let skyHeight = canvas.height * 0.65;
-            let groundHeight = canvas.height * 0.35;
+            let skyHeight = canvas.height * 0.60;
+            let groundHeight = canvas.height * 0.40;
 
             if (lightning) {
                 ctx.fillStyle = '#ffffff';
@@ -452,11 +567,11 @@
 
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 2;
-            let offset = (frame * gameSpeed) % 50;
-            for (let x = -offset; x < canvas.width; x += 50) {
+            let offset = (frame * gameSpeed) % 40;
+            for (let x = -offset; x < canvas.width; x += 40) {
                 ctx.beginPath();
                 ctx.moveTo(x, skyHeight + 5);
-                ctx.lineTo(x - 25, canvas.height);
+                ctx.lineTo(x - 20, canvas.height);
                 ctx.stroke();
             }
 
@@ -465,14 +580,14 @@
 
             if (currentRain > 0.05) {
                 ctx.strokeStyle = `rgba(186, 230, 253, ${Math.min(currentRain, 0.85)})`;
-                ctx.lineWidth = currentRain > 1 ? 2.5 : 1.5;
+                ctx.lineWidth = currentRain > 1 ? 2 : 1.2;
                 particles.forEach(p => {
                     p.y += p.speedY + (currentRain > 1 ? 4 : 0);
                     p.x += p.speedX - 2;
                     if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x - 5, p.y + p.length);
+                    ctx.lineTo(p.x - 4, p.y + p.length);
                     ctx.stroke();
                 });
             } else if (currentSnow > 0.05) {
@@ -492,6 +607,10 @@
             ctx.save();
             ctx.translate(x, y);
 
+            let shirtColor1 = '#ea580c', shirtColor2 = '#f97316';
+            if (currentChar === 1) { shirtColor1 = '#1e293b'; shirtColor2 = '#0f172a'; }
+            else if (currentChar === 2) { shirtColor1 = '#eab308'; shirtColor2 = '#ca8a04'; }
+
             let isRunning = !isJumping && !isDucking;
             let cycle = isRunning ? Math.sin(animFrame * 0.35) : 0;
             
@@ -501,75 +620,78 @@
             let shadowAlpha = isJumping ? 0.15 : 0.4;
             ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
             ctx.beginPath(); 
-            ctx.ellipse(28, isDucking ? 60 : 82, 30, 8, 0, 0, Math.PI * 2); 
+            ctx.ellipse(24, isDucking ? 50 : 72, 26, 7, 0, 0, Math.PI * 2); 
             ctx.fill();
 
             if (isDucking) {
-                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 10; ctx.lineCap = 'round';
-                ctx.beginPath(); ctx.moveTo(14, 38); ctx.lineTo(0, 56); ctx.lineTo(12, 58); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(14, 38); ctx.lineTo(26, 56); ctx.lineTo(38, 58); ctx.stroke();
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(12, 32); ctx.lineTo(0, 46); ctx.lineTo(10, 48); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(12, 32); ctx.lineTo(22, 46); ctx.lineTo(32, 48); ctx.stroke();
                 
-                let torsoGrad = ctx.createLinearGradient(0, 20, 32, 38);
-                torsoGrad.addColorStop(0, '#f97316'); torsoGrad.addColorStop(1, '#c2410c');
+                let torsoGrad = ctx.createLinearGradient(0, 18, 28, 32);
+                torsoGrad.addColorStop(0, shirtColor1); torsoGrad.addColorStop(1, shirtColor2);
                 ctx.fillStyle = torsoGrad;
-                ctx.beginPath(); ctx.ellipse(20, 30, 20, 12, -0.4, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(18, 26, 17, 10, -0.4, 0, Math.PI * 2); ctx.fill();
 
-                let headGrad = ctx.createRadialGradient(32, 18, 2, 32, 18, 11);
+                let headGrad = ctx.createRadialGradient(28, 16, 2, 28, 16, 9);
                 headGrad.addColorStop(0, '#ffedd5'); headGrad.addColorStop(1, '#fed7aa');
                 ctx.fillStyle = headGrad;
-                ctx.beginPath(); ctx.arc(32, 18, 11, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(28, 16, 9, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath(); ctx.arc(32, 16, 11, Math.PI, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(28, 14, 9, Math.PI, Math.PI * 2); ctx.fill();
 
-                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 8;
-                ctx.beginPath(); ctx.moveTo(18, 26); ctx.lineTo(32, 35); ctx.stroke();
+                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 7;
+                ctx.beginPath(); ctx.moveTo(16, 22); ctx.lineTo(28, 30); ctx.stroke();
             } else {
-                ctx.strokeStyle = '#ea580c'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 7; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(24, 25);
-                let backArmX = 24 - Math.sin(-armSwing) * 16;
-                let backArmY = 25 + Math.cos(-armSwing) * 16;
-                ctx.lineTo(backArmX, backArmY); ctx.lineTo(backArmX - 6, backArmY + 10); ctx.stroke();
+                ctx.moveTo(20, 22);
+                let backArmX = 20 - Math.sin(-armSwing) * 14;
+                let backArmY = 22 + Math.cos(-armSwing) * 14;
+                ctx.lineTo(backArmX, backArmY); ctx.lineTo(backArmX - 5, backArmY + 8); ctx.stroke();
 
-                ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 12; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 10; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(24, 46);
-                let backKneeX = 24 + Math.sin(-legSwing) * 18;
-                let backKneeY = 46 + Math.cos(-legSwing) * 18;
-                ctx.lineTo(backKneeX, backKneeY); ctx.lineTo(backKneeX - Math.sin(-legSwing) * 12, backKneeY + 16); ctx.stroke();
+                ctx.moveTo(20, 40);
+                let backKneeX = 20 + Math.sin(-legSwing) * 16;
+                let backKneeY = 40 + Math.cos(-legSwing) * 16;
+                ctx.lineTo(backKneeX, backKneeY); ctx.lineTo(backKneeX - Math.sin(-legSwing) * 10, backKneeY + 14); ctx.stroke();
 
-                let shirtGrad = ctx.createLinearGradient(10, 20, 35, 48);
-                shirtGrad.addColorStop(0, '#ea580c'); shirtGrad.addColorStop(0.7, '#f97316'); shirtGrad.addColorStop(1, '#c2410c');
+                let shirtGrad = ctx.createLinearGradient(8, 18, 30, 40);
+                shirtGrad.addColorStop(0, shirtColor1);
+                shirtGrad.addColorStop(0.7, shirtColor2);
+                shirtGrad.addColorStop(1, '#0f172a');
                 ctx.fillStyle = shirtGrad;
-                ctx.beginPath(); ctx.moveTo(10, 24); ctx.lineTo(34, 24); ctx.lineTo(28, 50); ctx.lineTo(14, 50); ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(8, 20); ctx.lineTo(28, 20); ctx.lineTo(24, 42); ctx.lineTo(12, 42); ctx.closePath(); ctx.fill();
 
-                ctx.fillStyle = '#fed7aa'; ctx.fillRect(18, 16, 8, 8);
+                ctx.fillStyle = '#fed7aa'; ctx.fillRect(16, 14, 6, 6);
 
-                let headGrad = ctx.createRadialGradient(22, 10, 2, 22, 10, 11);
-                headGrad.addColorStop(0, '#ffedd5'); headGrad.addColorStop(1, '#fed7aa');
+                let headGrad = ctx.createRadialGradient(19, 9, 2, 19, 9, 9.5);
+                headGrad.addColorStop(0, '#ffedd5');
+                headGrad.addColorStop(1, '#fed7aa');
                 ctx.fillStyle = headGrad;
-                ctx.beginPath(); ctx.arc(22, 10, 11, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(19, 9, 9.5, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath(); ctx.arc(22, 8, 11.2, Math.PI * 0.8, Math.PI * 2.1); ctx.fill();
+                ctx.beginPath(); ctx.arc(19, 7, 9.8, Math.PI * 0.8, Math.PI * 2.1); ctx.fill();
 
-                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 12.5; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 10.5; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(24, 46);
-                let frontKneeX = 24 + Math.sin(legSwing) * 18;
-                let frontKneeY = 46 + Math.cos(legSwing) * 18;
-                ctx.lineTo(frontKneeX, frontKneeY); ctx.lineTo(frontKneeX - Math.sin(legSwing) * 12, frontKneeY + 16); ctx.stroke();
+                ctx.moveTo(20, 40);
+                let frontKneeX = 20 + Math.sin(legSwing) * 16;
+                let frontKneeY = 40 + Math.cos(legSwing) * 16;
+                ctx.lineTo(frontKneeX, frontKneeY); ctx.lineTo(frontKneeX - Math.sin(legSwing) * 10, frontKneeY + 14); ctx.stroke();
 
                 ctx.fillStyle = '#38bdf8';
-                ctx.beginPath(); ctx.ellipse(frontKneeX - Math.sin(legSwing) * 12 + 2, frontKneeY + 16, 8, 4, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(frontKneeX - Math.sin(legSwing) * 10 + 2, frontKneeY + 14, 7, 3.5, 0, 0, Math.PI * 2); ctx.fill();
 
-                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 7.5; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(24, 24);
-                let frontArmX = 24 - Math.sin(armSwing) * 16;
-                let frontArmY = 24 + Math.cos(armSwing) * 16;
-                ctx.lineTo(frontArmX, frontArmY); ctx.lineTo(frontArmX + 6, frontArmY + 10); ctx.stroke();
+                ctx.moveTo(20, 20);
+                let frontArmX = 20 - Math.sin(armSwing) * 14;
+                let frontArmY = 20 + Math.cos(armSwing) * 14;
+                ctx.lineTo(frontArmX, frontArmY); ctx.lineTo(frontArmX + 5, frontArmY + 8); ctx.stroke();
             }
 
             ctx.restore();
@@ -604,35 +726,35 @@
             ctx.save();
             ctx.translate(x, y);
 
-            let scaleX = width / 40;
-            let scaleY = height / 25;
+            let scaleX = width / 35;
+            let scaleY = height / 22;
             ctx.scale(scaleX, scaleY);
 
-            let wingFlap = Math.sin(animFrame * 0.3) * 16;
+            let wingFlap = Math.sin(animFrame * 0.3) * 14;
 
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
-            ctx.beginPath(); ctx.ellipse(18, 60, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(15, 55, 12, 4, 0, 0, Math.PI * 2); ctx.fill();
 
-            let bodyGrad = ctx.createLinearGradient(0, 5, 28, 18);
+            let bodyGrad = ctx.createLinearGradient(0, 5, 24, 15);
             bodyGrad.addColorStop(0, '#22c55e'); bodyGrad.addColorStop(0.6, '#16a34a'); bodyGrad.addColorStop(1, '#15803d');
             ctx.fillStyle = bodyGrad;
-            ctx.beginPath(); ctx.ellipse(18, 12, 18, 7, -0.1, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(15, 10, 15, 6, -0.1, 0, Math.PI * 2); ctx.fill();
 
             ctx.fillStyle = '#0d9488';
-            ctx.beginPath(); ctx.moveTo(30, 13); ctx.lineTo(46, 18); ctx.lineTo(32, 15); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(26, 11); ctx.lineTo(40, 16); ctx.lineTo(28, 13); ctx.closePath(); ctx.fill();
 
-            let wingGrad = ctx.createLinearGradient(12, 10, 26, 10 - wingFlap);
+            let wingGrad = ctx.createLinearGradient(10, 8, 22, 8 - wingFlap);
             wingGrad.addColorStop(0, '#f59e0b'); wingGrad.addColorStop(0.5, '#10b981'); wingGrad.addColorStop(1, '#0284c7');
             ctx.fillStyle = wingGrad;
-            ctx.beginPath(); ctx.moveTo(12, 10); ctx.quadraticCurveTo(21, 10 - wingFlap * 1.3, 29, 5 - wingFlap); ctx.quadraticCurveTo(21, 14, 14, 16); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(10, 8); ctx.quadraticCurveTo(18, 8 - wingFlap * 1.3, 25, 4 - wingFlap); ctx.quadraticCurveTo(18, 12, 12, 14); ctx.closePath(); ctx.fill();
 
             ctx.fillStyle = '#ef4444';
-            ctx.beginPath(); ctx.moveTo(4, 10); ctx.quadraticCurveTo(-5, 12, -2, 18); ctx.lineTo(4, 14); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(3, 8); ctx.quadraticCurveTo(-4, 10, -2, 15); ctx.lineTo(3, 12); ctx.closePath(); ctx.fill();
 
             ctx.fillStyle = '#ffffff';
-            ctx.beginPath(); ctx.arc(7, 10, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(6, 8, 2.5, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#0f172a';
-            ctx.beginPath(); ctx.arc(6.5, 10, 1.4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(5.5, 8, 1.2, 0, Math.PI * 2); ctx.fill();
 
             ctx.restore();
         }
@@ -647,15 +769,15 @@
             ctx.fillRect(0, 0, width, height);
 
             ctx.fillStyle = '#d97706';
-            ctx.fillRect(0, 0, width, 6); ctx.fillRect(0, height - 6, width, 6);
-            ctx.fillRect(0, 0, 6, height); ctx.fillRect(width - 6, 0, 6, height);
+            ctx.fillRect(0, 0, width, 5); ctx.fillRect(0, height - 5, width, 5);
+            ctx.fillRect(0, 0, 5, height); ctx.fillRect(width - 5, 0, 5, height);
 
             ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(3, 3, 3, 3); ctx.fillRect(width - 6, 3, 3, 3);
-            ctx.fillRect(3, height - 6, 3, 3); ctx.fillRect(width - 6, height - 6, 3, 3);
+            ctx.fillRect(2, 2, 2, 2); ctx.fillRect(width - 4, 2, 2, 2);
+            ctx.fillRect(2, height - 4, 2, 2); ctx.fillRect(width - 4, height - 4, 2, 2);
 
-            ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3.5;
-            ctx.beginPath(); ctx.moveTo(3, 3); ctx.lineTo(width - 3, height - 3); ctx.moveTo(width - 3, 3); ctx.lineTo(3, height - 3); ctx.stroke();
+            ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(2, 2); ctx.lineTo(width - 2, height - 2); ctx.moveTo(width - 2, 2); ctx.lineTo(2, height - 2); ctx.stroke();
 
             ctx.restore();
         }
@@ -702,7 +824,7 @@
             updateWeatherLogic();
             drawDynamicWeather();
 
-            let groundY = canvas.height * 0.65;
+            let groundY = canvas.height * 0.60;
             let playerFloorY = groundY - player.height;
 
             player.dy += player.gravity;
@@ -714,26 +836,26 @@
                 player.isJumping = false;
             }
 
-            let currentY = player.isDucking ? player.y + 30 : player.y;
+            let currentY = player.isDucking ? player.y + 25 : player.y;
             drawHumanRunner(player.x, currentY, player.isDucking, player.isJumping, frame);
 
             spawnTimer++;
             if (spawnTimer > Math.max(45, 90 - (gameSpeed * 3))) {
                 let randType = Math.random();
                 if (randType > 0.55) {
-                    let heights = [groundY - 105, groundY - 75];
-                    obstacles.push({ x: canvas.width, y: heights[Math.floor(Math.random() * heights.length)], width: 70, height: 38, type: 'bird' });
+                    let heights = [groundY - 85, groundY - 55];
+                    obstacles.push({ x: canvas.width, y: heights[Math.floor(Math.random() * heights.length)], width: 60, height: 32, type: 'bird' });
                 } else if (randType > 0.25) {
-                    obstacles.push({ x: canvas.width, y: groundY - 60, width: 75, height: 60, type: 'crate' });
+                    obstacles.push({ x: canvas.width, y: groundY - 50, width: 65, height: 50, type: 'crate' });
                 } else {
                     for(let c = 0; c < 3; c++) {
-                        collectibleCoins.push({ x: canvas.width + (c * 35), y: groundY - 110, collected: false });
+                        collectibleCoins.push({ x: canvas.width + (c * 35), y: groundY - 90, collected: false });
                     }
                 }
                 spawnTimer = 0;
             }
 
-            let currentHeight = player.isDucking ? 45 : 85;
+            let currentHeight = player.isDucking ? 40 : 75;
 
             for (let i = 0; i < collectibleCoins.length; i++) {
                 let coin = collectibleCoins[i];
