@@ -21,7 +21,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
@@ -30,7 +30,7 @@
 
         header {
             text-align: center;
-            padding: 6px 10px 2px 10px;
+            padding: 4px 10px;
             z-index: 10;
         }
 
@@ -40,13 +40,13 @@
             text-transform: uppercase; 
             letter-spacing: 1px; 
             text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); 
-            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-size: clamp(0.9rem, 3.5vw, 1.3rem);
         }
         h3 { 
             margin: 0; 
             color: #facc15; 
             text-shadow: 0 0 6px rgba(250, 204, 21, 0.4); 
-            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+            font-size: clamp(0.65rem, 2vw, 0.8rem);
         }
 
         #game-wrapper {
@@ -146,33 +146,39 @@
             cursor: pointer;
         }
 
-        /* Mobile Touch Controls Overlay */
+        /* In-Canvas Overlay Controls */
         .controls-overlay {
-            width: 100vw;
-            padding: 10px 16px 16px 16px;
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            width: 100%;
+            padding: 0 15px;
             display: flex;
             justify-content: space-between;
-            gap: 15px;
+            gap: 20px;
             z-index: 20;
+            pointer-events: none; /* Allows canvas clicks if needed, buttons will enable pointer */
         }
 
         .btn-touch {
             flex: 1;
-            padding: 14px 0;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 2px solid #38bdf8;
+            padding: 12px 0;
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(56, 189, 248, 0.8);
             border-radius: 10px;
             color: #ffffff;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            pointer-events: auto;
         }
 
         .btn-touch:active {
-            background: #38bdf8;
+            background: rgba(56, 189, 248, 0.9);
             color: #0f172a;
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
     </style>
 </head>
@@ -200,11 +206,12 @@
         </div>
 
         <canvas id="gameCanvas"></canvas>
-    </div>
 
-    <div class="controls-overlay">
-        <div class="btn-touch" id="btn-duck">DUCK 👇</div>
-        <div class="btn-touch" id="btn-jump">JUMP 🏃‍♂️</div>
+        <!-- Touch Controls Inside Game Area -->
+        <div class="controls-overlay">
+            <div class="btn-touch" id="btn-duck">DUCK 👇</div>
+            <div class="btn-touch" id="btn-jump">JUMP 🏃‍♂️</div>
+        </div>
     </div>
 
     <script>
@@ -213,7 +220,6 @@
         const btnPause = document.getElementById('btn-pause');
         const menuOverlay = document.getElementById('menu-overlay');
 
-        // Audio Effects (Web Audio API)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(freq, type, duration) {
             try {
@@ -473,7 +479,6 @@
             }
         }
 
-        // ATHLETIC HUMAN RUNNER (Mota Character)
         function drawHumanRunner(x, y, isDucking, isJumping, animFrame) {
             ctx.save();
             ctx.translate(x, y);
