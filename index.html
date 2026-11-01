@@ -157,6 +157,9 @@
             margin: 15px 0;
             width: 100%;
             max-width: 320px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 5px;
         }
 
         .store-card {
@@ -167,10 +170,6 @@
             justify-content: space-between;
             align-items: center;
             border: 1px solid #334155;
-        }
-
-        .store-card.selected {
-            border-color: #22c55e;
         }
 
         .controls-overlay {
@@ -197,7 +196,7 @@
 
         .btn-touch:active {
             background: #38bdf8;
-            color: #0b0f19;
+            color: #0f172a;
             transform: scale(0.96);
         }
 
@@ -226,7 +225,7 @@
     </header>
 
     <div id="game-wrapper">
-        <button id="btn-pause" style="display:none;">⏸</button>
+        <button id="btn-pause" style="display:none;">⏸ Pause / Store</button>
 
         <!-- Start Menu Overlay -->
         <div id="menu-overlay" class="overlay-screen">
@@ -239,30 +238,40 @@
                 <button class="btn-ui" onclick="setWeatherMode('WINTER', this)">Winter ❄️</button>
             </div>
             <button class="btn-main" onclick="startGame()">START GAME 🚀</button>
-            <button class="btn-store" onclick="openStore()">🛍️ STORE (Coins: <span id="menu-coins">0</span>)</button>
+            <button class="btn-store" onclick="openStore()">🛍️ STORE & POWERS (Coins: <span id="menu-coins">0</span>)</button>
         </div>
 
         <!-- Store Menu Overlay -->
         <div id="store-overlay" class="overlay-screen" style="display:none;">
-            <h2>Character Store 🛍️</h2>
-            <p style="color: #facc15; margin-bottom: 10px;">Available Coins: 🪙 <span id="store-coins">0</span></p>
+            <h2>Store & Powers 🛍️</h2>
+            <p style="color: #facc15; margin-bottom: 5px;">Available Coins: 🪙 <span id="store-coins">0</span></p>
             
             <div class="store-items">
-                <div class="store-card" id="card-classic">
-                    <span style="color:#fff; font-weight:bold;">🏃‍♂️ Classic Runner</span>
-                    <button class="btn-ui active" style="padding:4px 10px;" id="btn-char-0" onclick="buyOrSelectCharacter(0, 0)">Equipped</button>
+                <p style="color:#38bdf8; font-weight:bold; font-size:13px; text-align:left;">Consumable Characters:</p>
+                <div class="store-card">
+                    <span style="color:#fff; font-weight:bold; font-size:13px;">🏃‍♂️ Classic Runner</span>
+                    <button class="btn-ui active" style="padding:4px 10px;" id="btn-char-0" onclick="buyAndSelectCharacter(0, 0)">Equip</button>
                 </div>
-                <div class="store-card" id="card-ninja">
-                    <span style="color:#fff; font-weight:bold;">🥷 Ninja Runner</span>
-                    <button class="btn-ui" style="padding:4px 10px;" id="btn-char-1" onclick="buyOrSelectCharacter(1, 100)">100 🪙</button>
+                <div class="store-card">
+                    <span style="color:#fff; font-weight:bold; font-size:13px;">🥷 Ninja Runner</span>
+                    <button class="btn-ui" style="padding:4px 10px;" id="btn-char-1" onclick="buyAndSelectCharacter(1, 100)">Use 100 🪙</button>
                 </div>
-                <div class="store-card" id="card-pro">
-                    <span style="color:#fff; font-weight:bold;">⚡ Pro Lightning</span>
-                    <button class="btn-ui" style="padding:4px 10px;" id="btn-char-2" onclick="buyOrSelectCharacter(2, 250)">250 🪙</button>
+                <div class="store-card">
+                    <span style="color:#fff; font-weight:bold; font-size:13px;">⚡ Flash</span>
+                    <button class="btn-ui" style="padding:4px 10px;" id="btn-char-2" onclick="buyAndSelectCharacter(2, 250)">Use 250 🪙</button>
                 </div>
+
+                <p style="color:#38bdf8; font-weight:bold; font-size:13px; text-align:left; margin-top:8px;">7 Heavy Special Powers:</p>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">🛡️ Shield (5s Invincible)</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('shield', 50)">50 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">🧲 Coin Magnet</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('magnet', 75)">75 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">💖 Revive (Second Chance)</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('revive', 150)">150 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">⚡ Turbo Speed Boost</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('turbo', 60)">60 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">🪂 Double Jump Power</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('doublejump', 80)">80 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">🛑 Time Slow Motion</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('slow', 90)">90 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:12px;">💎 2x Score Multiplier</span><button class="btn-ui" style="padding:4px 10px;" onclick="buyPower('multiplier', 100)">100 🪙</button></div>
             </div>
 
-            <button class="btn-main" onclick="closeStore()">🔙 BACK TO MENU</button>
+            <button class="btn-main" onclick="closeStore()">🔙 RESUME / MENU</button>
         </div>
 
         <canvas id="gameCanvas"></canvas>
@@ -307,12 +316,25 @@
         let score = 0;
         let coins = parseInt(localStorage.getItem('runner_coins')) || 0;
         let highScore = localStorage.getItem('runner_highscore') || 0;
-        let unlockedChars = JSON.parse(localStorage.getItem('runner_unlocked')) || [true, false, false];
         let currentChar = parseInt(localStorage.getItem('runner_current_char')) || 0;
+
+        let activeShield = false;
+        let shieldTimer = 0;
+        let activeMagnet = false;
+        let activeTurbo = false;
+        let activeSlow = false;
+        let activeMultiplier = false;
+        let isMiniBossActive = false;
+        let bossHealth = 100;
+        let meteors = [];
 
         document.getElementById('menu-coins').innerText = coins;
 
         function openStore() {
+            if(gameStarted && !isPaused) {
+                isPaused = true;
+                btnPause.innerText = '▶ Resume';
+            }
             document.getElementById('store-coins').innerText = coins;
             updateStoreUI();
             menuOverlay.style.display = 'none';
@@ -321,8 +343,15 @@
 
         function closeStore() {
             storeOverlay.style.display = 'none';
-            menuOverlay.style.display = 'flex';
-            document.getElementById('menu-coins').innerText = coins;
+            if(gameStarted) {
+                menuOverlay.style.display = 'none';
+                isPaused = false;
+                btnPause.innerText = '⏸ Pause / Store';
+                animate();
+            } else {
+                menuOverlay.style.display = 'flex';
+                document.getElementById('menu-coins').innerText = coins;
+            }
         }
 
         function updateStoreUI() {
@@ -332,33 +361,51 @@
                 if(currentChar === i) {
                     btn.innerText = 'Equipped';
                     btn.style.background = '#22c55e';
-                } else if(unlockedChars[i]) {
-                    btn.innerText = 'Select';
-                    btn.style.background = '#38bdf8';
                 } else {
-                    let cost = i === 1 ? 100 : 250;
-                    btn.innerText = cost + ' 🪙';
+                    let cost = i === 0 ? 0 : (i === 1 ? 100 : 250);
+                    btn.innerText = i === 0 ? 'Equip' : `Use ${cost} 🪙`;
                     btn.style.background = '#1e293b';
                 }
             }
         }
 
-        function buyOrSelectCharacter(index, price) {
-            if(unlockedChars[index]) {
+        function buyAndSelectCharacter(index, price) {
+            if(price === 0 || coins >= price) {
+                if(price > 0) {
+                    coins -= price;
+                    localStorage.setItem('runner_coins', coins);
+                    playSound(700, 'sine', 0.2);
+                } else {
+                    playSound(500, 'sine', 0.1);
+                }
                 currentChar = index;
                 localStorage.setItem('runner_current_char', currentChar);
-            } else if(coins >= price) {
-                coins -= price;
-                unlockedChars[index] = true;
-                currentChar = index;
-                localStorage.setItem('runner_coins', coins);
-                localStorage.setItem('runner_unlocked', JSON.stringify(unlockedChars));
-                localStorage.setItem('runner_current_char', currentChar);
-                playSound(600, 'sine', 0.2);
             } else {
                 playSound(150, 'sawtooth', 0.2);
+                alert("Not enough coins!");
             }
             updateStoreUI();
+            document.getElementById('store-coins').innerText = coins;
+            document.getElementById('menu-coins').innerText = coins;
+        }
+
+        function buyPower(type, cost) {
+            if(coins >= cost) {
+                coins -= cost;
+                localStorage.setItem('runner_coins', coins);
+                playSound(800, 'sine', 0.2);
+                if(type === 'shield') { activeShield = true; shieldTimer = 300; alert("🛡️ Shield Activated!"); }
+                else if(type === 'magnet') { activeMagnet = true; alert("🧲 Coin Magnet Activated!"); }
+                else if(type === 'turbo') { activeTurbo = true; alert("⚡ Turbo Speed Activated!"); }
+                else if(type === 'slow') { activeSlow = true; alert("🛑 Slow Motion Activated!"); }
+                else if(type === 'multiplier') { activeMultiplier = true; alert("💎 2x Multiplier Activated!"); }
+                else { alert("Power Purchased Successfully!"); }
+            } else {
+                playSound(150, 'sawtooth', 0.2);
+                alert("Not enough coins!");
+            }
+            document.getElementById('store-coins').innerText = coins;
+            document.getElementById('menu-coins').innerText = coins;
         }
 
         let level = 1;
@@ -447,9 +494,7 @@
 
         btnPause.addEventListener('click', () => {
             if (!gameStarted || gameOver) return;
-            isPaused = !isPaused;
-            btnPause.innerText = isPaused ? '▶' : '⏸';
-            if (!isPaused) animate();
+            openStore();
         });
 
         window.addEventListener('keydown', (e) => {
@@ -476,11 +521,8 @@
         function jump() {
             if (!player.isJumping && !gameOver && !player.isDucking && gameStarted && !isPaused) {
                 let currentJumpPower = player.jumpForce;
-                if (currentChar === 1) { 
-                    currentJumpPower = -15.5; // Ninja Higher Jump
-                } else if (currentChar === 2) { 
-                    currentJumpPower = -14; // Pro Lightning Quick Jump
-                }
+                if (currentChar === 1) { currentJumpPower = -15.5; } 
+                else if (currentChar === 2) { currentJumpPower = -14; }
                 player.dy = currentJumpPower;
                 player.isJumping = true;
                 playSound(400, 'triangle', 0.15);
@@ -495,9 +537,12 @@
             baseGameSpeed = 5.5;
             obstacles = [];
             collectibleCoins = [];
+            meteors = [];
+            isMiniBossActive = false;
+            bossHealth = 100;
             gameOver = false;
             isPaused = false;
-            btnPause.innerText = '⏸';
+            btnPause.innerText = '⏸ Pause / Store';
             if (selectedMode === 'AUTO') {
                 currentWeatherIdx = 0;
                 nextWeatherIdx = 1;
@@ -540,30 +585,34 @@
             let skyHeight = canvas.height * 0.65;
             let groundHeight = canvas.height * 0.35;
 
-            if (lightning) {
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                return;
+            if (isMiniBossActive) {
+                ctx.fillStyle = '#581c87';
+                ctx.fillRect(0, 0, canvas.width, skyHeight);
+            } else {
+                if (lightning) {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+
+                let curr = weathers[currentWeatherIdx];
+                let next = weathers[nextWeatherIdx];
+
+                let skyTopColor = lerpColor(curr.skyTop, next.skyTop, transitionFactor);
+                let skyBotColor = lerpColor(curr.skyBot, next.skyBot, transitionFactor);
+
+                let skyGrad = ctx.createLinearGradient(0, 0, 0, skyHeight);
+                skyGrad.addColorStop(0, skyTopColor);
+                skyGrad.addColorStop(1, skyBotColor);
+                ctx.fillStyle = skyGrad;
+                ctx.fillRect(0, 0, canvas.width, skyHeight);
             }
-
-            let curr = weathers[currentWeatherIdx];
-            let next = weathers[nextWeatherIdx];
-
-            let skyTopColor = lerpColor(curr.skyTop, next.skyTop, transitionFactor);
-            let skyBotColor = lerpColor(curr.skyBot, next.skyBot, transitionFactor);
-            let groundColor = lerpColor(curr.groundTop, next.groundTop, transitionFactor);
-
-            let skyGrad = ctx.createLinearGradient(0, 0, 0, skyHeight);
-            skyGrad.addColorStop(0, skyTopColor);
-            skyGrad.addColorStop(1, skyBotColor);
-            ctx.fillStyle = skyGrad;
-            ctx.fillRect(0, 0, canvas.width, skyHeight);
 
             clouds.forEach(c => {
                 c.x -= c.z * 1.5;
                 if (c.x < -150) c.x = canvas.width + 150;
 
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.fillStyle = isMiniBossActive ? 'rgba(168, 85, 247, 0.4)' : 'rgba(255, 255, 255, 0.85)';
                 ctx.beginPath();
                 ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
                 ctx.arc(c.x + c.r * 0.7, c.y - c.r * 0.2, c.r * 0.7, 0, Math.PI * 2);
@@ -571,9 +620,10 @@
                 ctx.fill();
             });
 
+            let groundColor = isMiniBossActive ? '#3b0764' : lerpColor(weathers[currentWeatherIdx].groundTop, weathers[nextWeatherIdx].groundTop, transitionFactor);
             let groundGrad = ctx.createLinearGradient(0, skyHeight, 0, canvas.height);
             groundGrad.addColorStop(0, groundColor);
-            groundGrad.addColorStop(1, '#3f2305');
+            groundGrad.addColorStop(1, '#180a03');
             ctx.fillStyle = groundGrad;
             ctx.fillRect(0, skyHeight, canvas.width, groundHeight);
 
@@ -585,33 +635,6 @@
                 ctx.moveTo(x, skyHeight + 5);
                 ctx.lineTo(x - 25, canvas.height);
                 ctx.stroke();
-            }
-
-            let currentRain = curr.rain + (next.rain - curr.rain) * transitionFactor;
-            let currentSnow = curr.snow + (next.snow - curr.snow) * transitionFactor;
-
-            if (currentRain > 0.05) {
-                ctx.strokeStyle = `rgba(186, 230, 253, ${Math.min(currentRain, 0.85)})`;
-                ctx.lineWidth = currentRain > 1 ? 2.5 : 1.5;
-                particles.forEach(p => {
-                    p.y += p.speedY + (currentRain > 1 ? 4 : 0);
-                    p.x += p.speedX - 2;
-                    if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x - 5, p.y + p.length);
-                    ctx.stroke();
-                });
-            } else if (currentSnow > 0.05) {
-                ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(currentSnow, 0.9)})`;
-                particles.forEach(p => {
-                    p.y += p.speedY * 0.3;
-                    p.x += Math.sin(frame * 0.05 + p.y) * 1.5;
-                    if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fill();
-                });
             }
         }
 
@@ -634,6 +657,14 @@
             ctx.beginPath(); 
             ctx.ellipse(28, isDucking ? 60 : 82, 30, 8, 0, 0, Math.PI * 2); 
             ctx.fill();
+
+            if(activeShield) {
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(24, 40, 45, 0, Math.PI * 2);
+                ctx.stroke();
+            }
 
             if (isDucking) {
                 ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 10; ctx.lineCap = 'round';
@@ -734,14 +765,26 @@
             ctx.restore();
         }
 
+        function drawMeteor(x, y) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(0, 0, 18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#f97316';
+            ctx.beginPath();
+            ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
         function drawRealisticParrot(x, y, animFrame, width, height) {
             ctx.save();
             ctx.translate(x, y);
-
             let scaleX = width / 40;
             let scaleY = height / 25;
             ctx.scale(scaleX, scaleY);
-
             let wingFlap = Math.sin(animFrame * 0.3) * 16;
 
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
@@ -774,7 +817,6 @@
         function draw3DCrate(x, y, width, height) {
             ctx.save();
             ctx.translate(x, y);
-
             let frontGrad = ctx.createLinearGradient(0, 0, width, height);
             frontGrad.addColorStop(0, '#b45309'); frontGrad.addColorStop(0.7, '#78350f'); frontGrad.addColorStop(1, '#451a03');
             ctx.fillStyle = frontGrad;
@@ -790,12 +832,31 @@
 
             ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3.5;
             ctx.beginPath(); ctx.moveTo(3, 3); ctx.lineTo(width - 3, height - 3); ctx.moveTo(width - 3, 3); ctx.lineTo(3, height - 3); ctx.stroke();
-
             ctx.restore();
         }
 
         function animate() {
             if (!gameStarted || isPaused) return;
+
+            if (activeShield) {
+                shieldTimer--;
+                if(shieldTimer <= 0) activeShield = false;
+            }
+
+            if (score > 0 && score % 500 === 0 && !isMiniBossActive) {
+                isMiniBossActive = true;
+                bossHealth = 100;
+                playSound(300, 'sawtooth', 0.6);
+            }
+
+            if (isMiniBossActive) {
+                bossHealth -= 0.25;
+                if (bossHealth <= 0) {
+                    isMiniBossActive = false;
+                    coins += 50;
+                    playSound(900, 'sine', 0.4);
+                }
+            }
 
             if (gameOver) {
                 playSound(150, 'sawtooth', 0.4);
@@ -820,7 +881,6 @@
                 ctx.fillStyle = '#22c55e';
                 ctx.fillText('Total Coins 🪙: ' + coins, canvas.width / 2, canvas.height / 2 + 20);
 
-                // Back to Menu Button Box drawn inside canvas
                 ctx.fillStyle = '#22c55e';
                 ctx.fillRect(canvas.width / 2 - 110, canvas.height / 2 + 65, 220, 45);
                 ctx.fillStyle = '#ffffff';
@@ -839,6 +899,8 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             frame++;
+            let pointIncrement = activeMultiplier ? 2 : 1;
+            score += pointIncrement;
             level = Math.floor(score / 300) + 1;
 
             updateWeatherLogic();
@@ -860,16 +922,21 @@
             drawHumanRunner(player.x, currentY, player.isDucking, player.isJumping, frame);
 
             spawnTimer++;
-            if (spawnTimer > Math.max(40, 85 - (gameSpeed * 3))) {
-                let randType = Math.random();
-                if (randType > 0.55) {
-                    let heights = [groundY - 105, groundY - 75];
-                    obstacles.push({ x: canvas.width, y: heights[Math.floor(Math.random() * heights.length)], width: 70, height: 38, type: 'bird' });
-                } else if (randType > 0.25) {
-                    obstacles.push({ x: canvas.width, y: groundY - 60, width: 75, height: 60, type: 'crate' });
+            let spawnLimit = isMiniBossActive ? 22 : Math.max(40, 85 - (gameSpeed * 3));
+            if (spawnTimer > spawnLimit) {
+                if (isMiniBossActive && Math.random() < 0.7) {
+                    meteors.push({ x: Math.random() * (canvas.width - 100) + 50, y: -20, speed: 8 });
                 } else {
-                    for(let c = 0; c < 3; c++) {
-                        collectibleCoins.push({ x: canvas.width + (c * 35), y: groundY - 110, collected: false });
+                    let randType = Math.random();
+                    if (randType > 0.55) {
+                        let heights = [groundY - 105, groundY - 75];
+                        obstacles.push({ x: canvas.width, y: heights[Math.floor(Math.random() * heights.length)], width: 70, height: 38, type: 'bird' });
+                    } else if (randType > 0.25) {
+                        obstacles.push({ x: canvas.width, y: groundY - 60, width: 75, height: 60, type: 'crate' });
+                    } else {
+                        for(let c = 0; c < 3; c++) {
+                            collectibleCoins.push({ x: canvas.width + (c * 35), y: groundY - 110, collected: false });
+                        }
                     }
                 }
                 spawnTimer = 0;
@@ -879,6 +946,9 @@
 
             for (let i = 0; i < collectibleCoins.length; i++) {
                 let coin = collectibleCoins[i];
+                if (activeMagnet && coin.x > player.x - 120 && coin.x < player.x + 200) {
+                    coin.x += (player.x - coin.x) * 0.1;
+                }
                 coin.x -= gameSpeed;
                 if (!coin.collected) {
                     drawCoin(coin.x, coin.y, frame);
@@ -896,9 +966,33 @@
             }
             collectibleCoins = collectibleCoins.filter(c => c.x + 20 > 0 && !c.collected);
 
+            for (let i = 0; i < meteors.length; i++) {
+                let m = meteors[i];
+                m.y += m.speed;
+                m.x -= gameSpeed * 0.4;
+                drawMeteor(m.x, m.y);
+
+                if (
+                    player.x < m.x + 15 &&
+                    player.x + player.width > m.x - 15 &&
+                    currentY < m.y + 15 &&
+                    currentY + currentHeight > m.y - 15
+                ) {
+                    if(activeShield) {
+                        activeShield = false;
+                        meteors.splice(i, 1);
+                        playSound(300, 'square', 0.3);
+                    } else {
+                        gameOver = true;
+                    }
+                }
+            }
+            meteors = meteors.filter(m => m.y < groundY + 20);
+
             for (let i = 0; i < obstacles.length; i++) {
                 let obs = obstacles[i];
-                obs.x -= gameSpeed;
+                let currentObsSpeed = activeSlow ? gameSpeed * 0.5 : gameSpeed;
+                obs.x -= currentObsSpeed;
 
                 if (obs.type === 'crate') {
                     draw3DCrate(obs.x, obs.y, obs.width, obs.height);
@@ -912,13 +1006,17 @@
                     currentY < obs.y + obs.height &&
                     currentY + currentHeight > obs.y
                 ) {
-                    gameOver = true;
+                    if(activeShield) {
+                        activeShield = false;
+                        obstacles.splice(i, 1);
+                        playSound(300, 'square', 0.3);
+                    } else {
+                        gameOver = true;
+                    }
                 }
             }
 
             obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
-
-            score++;
 
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 16px Arial';
@@ -926,13 +1024,32 @@
             ctx.fillStyle = '#facc15';
             ctx.fillText('🪙 Coins: ' + coins, canvas.width - 150, 55);
 
-            let currName = weathers[currentWeatherIdx].name;
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillText(`Lvl ${level} | ${currName}`, 20, 30);
+            if(activeShield) {
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillText('🛡️ SHIELD', 20, 55);
+            }
+
+            if(isMiniBossActive) {
+                ctx.fillStyle = '#ef4444';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('⚔️ MINI BOSS FIGHT!', canvas.width / 2 - 75, 30);
+                
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(canvas.width / 2 - 80, 40, 160, 12);
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(canvas.width / 2 - 80, 40, (bossHealth / 100) * 160, 12);
+            } else {
+                let currName = weathers[currentWeatherIdx].name;
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillText(`Lvl ${level} | ${currName}`, 20, 30);
+            }
 
             let charSpeedMultiplier = 1.0;
             if (currentChar === 2) {
-                charSpeedMultiplier = 1.25; // Pro Lightning Fast Speed
+                charSpeedMultiplier = 1.25;
+            }
+            if (activeTurbo) {
+                charSpeedMultiplier *= 1.5;
             }
 
             let speedMult = weathers[currentWeatherIdx].speedMult || 1.0;
