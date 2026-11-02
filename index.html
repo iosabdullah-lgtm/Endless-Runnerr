@@ -514,6 +514,7 @@
         let obstacles = [];
         let collectibleCoins = [];
         let spawnTimer = 0;
+        let lastMeteorHigh = false;
 
         function setWeatherMode(mode, btn) {
             selectedMode = mode;
@@ -672,6 +673,7 @@
             player.dy = 0;
             player.isJumping = false;
             player.isDucking = false;
+            lastMeteorHigh = false;
         }
 
         function triggerGameOverOrRevive() {
@@ -914,11 +916,11 @@
             ctx.translate(x, y);
             ctx.fillStyle = '#ef4444';
             ctx.beginPath();
-            ctx.arc(0, 0, 12, 0, Math.PI * 2); // Smaller radius (was 15)
+            ctx.arc(0, 0, 9, 0, Math.PI * 2); // Smaller Outer Size
             ctx.fill();
             ctx.fillStyle = '#f97316';
             ctx.beginPath();
-            ctx.arc(0, 0, 6, 0, Math.PI * 2); // Smaller inner radius (was 8)
+            ctx.arc(0, 0, 4, 0, Math.PI * 2); // Smaller Inner Size
             ctx.fill();
             ctx.restore();
         }
@@ -1078,14 +1080,17 @@
             drawHumanRunner(player.x, currentY, player.isDucking, player.isJumping, frame);
 
             spawnTimer++;
-            let spawnLimit = isMiniBossActive ? 30 : Math.max(75, 120 - (gameSpeed * 2));
+            // Increased the spawn gap (timer limit) for Meteors to 65 frames so player has time to recover between obstacles
+            let spawnLimit = isMiniBossActive ? 65 : Math.max(75, 120 - (gameSpeed * 2));
+            
             if (spawnTimer > spawnLimit) {
                 if (isMiniBossActive) {
-                    if (Math.random() < 0.7) {
-                        // Meteors now come from the front right, at variable heights (ground level to jump height)
-                        let meteorY = Math.random() > 0.5 ? groundY - 40 : groundY - 80;
-                        meteors.push({ x: canvas.width, y: meteorY, speed: gameSpeed * 1.2 });
-                    }
+                    // Clearly alternating between high (duck) and low (jump) meteor paths
+                    if (Math.random() > 0.3) lastMeteorHigh = !lastMeteorHigh;
+                    
+                    let meteorY = lastMeteorHigh ? groundY - 78 : groundY - 25; 
+                    // Normal speed for Meteors instead of accelerated speed
+                    meteors.push({ x: canvas.width, y: meteorY, speed: gameSpeed * 1.0 }); 
                 } else {
                     let randType = Math.random();
                     if (randType > 0.55) {
@@ -1128,17 +1133,18 @@
 
             for (let i = 0; i < meteors.length; i++) {
                 let m = meteors[i];
-                // Meteors move horizontally towards the player, slight vertical bobbing
+                
                 m.x -= m.speed * timeFactor;
-                m.y += Math.sin(frame * 0.1) * 0.5; // Slight up/down movement
+                m.y += Math.sin(frame * 0.1) * 0.5; // Slight up/down hovering effect
 
                 drawMeteor(m.x, m.y);
 
+                // Very forgiving hitbox for smaller meteors (now 7 instead of 10)
                 if (
-                    player.x < m.x + 10 &&
-                    player.x + player.width > m.x - 10 &&
-                    currentY < m.y + 10 &&
-                    currentY + currentHeight > m.y - 10
+                    player.x < m.x + 7 &&
+                    player.x + player.width > m.x - 7 &&
+                    currentY < m.y + 7 &&
+                    currentY + currentHeight > m.y - 7
                 ) {
                     if(activeShield) {
                         activeShield = false;
@@ -1149,7 +1155,7 @@
                     }
                 }
             }
-            meteors = meteors.filter(m => m.x + 20 > 0); // Remove when off screen left
+            meteors = meteors.filter(m => m.x + 20 > 0);
 
             if (!isMiniBossActive) {
                 for (let i = 0; i < obstacles.length; i++) {
