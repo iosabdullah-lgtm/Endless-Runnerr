@@ -26,14 +26,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
         }
 
         header {
             text-align: center;
-            padding: 6px 10px;
+            padding: 2px 5px;
             z-index: 10;
             width: 100%;
+            flex-shrink: 0;
         }
 
         h1 { 
@@ -42,37 +43,39 @@
             text-transform: uppercase; 
             letter-spacing: 1px; 
             text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); 
-            font-size: clamp(1rem, 4vw, 1.3rem);
+            font-size: clamp(0.8rem, 3vw, 1.1rem);
         }
         h3 { 
             margin: 0; 
             color: #facc15; 
             text-shadow: 0 0 5px rgba(250, 204, 21, 0.4); 
-            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+            font-size: clamp(0.6rem, 2vw, 0.75rem);
         }
 
         #game-wrapper {
             position: relative;
-            width: 100vw;
-            flex-grow: 1;
+            width: 100%;
+            max-width: 400px;
+            height: 78vh;
+            max-height: 650px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow: hidden;
             background: #0b0f19;
-            padding: 5px;
+            border: 2px solid #38bdf8;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
+            border-radius: 14px;
+            padding: 4px;
         }
 
         #gameCanvas {
-            border: 2px solid #38bdf8;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8);
-            border-radius: 12px;
             width: 100% !important;
             height: 100% !important;
-            max-width: 100%;
-            max-height: 100%;
             object-fit: fill;
             background: #0b0f19;
+            border-radius: 10px;
         }
 
         .overlay-screen {
@@ -87,35 +90,36 @@
             justify-content: center;
             align-items: center;
             z-index: 30;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
+            overflow-y: auto;
         }
 
         .overlay-screen h2 {
             color: #facc15;
-            font-size: clamp(1.2rem, 5vw, 1.6rem);
-            margin-bottom: 10px;
+            font-size: clamp(0.9rem, 3.5vw, 1.3rem);
+            margin-bottom: 4px;
             text-transform: uppercase;
         }
 
         .select-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 4px;
             justify-content: center;
-            margin-bottom: 12px;
-            max-width: 90%;
+            margin-bottom: 6px;
+            max-width: 100%;
         }
 
         .btn-ui {
-            padding: 8px 14px;
+            padding: 5px 9px;
             background: #1e293b;
             border: none;
             color: #fff;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 10px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
 
@@ -125,73 +129,78 @@
         }
 
         .btn-main {
-            padding: 12px 30px;
+            padding: 8px 20px;
             background: #22c55e;
             border: none;
             color: #fff;
-            font-size: 16px;
+            font-size: 13px;
             font-weight: bold;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+            border-radius: 8px;
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 4px;
         }
 
         .btn-store {
-            padding: 10px 25px;
+            padding: 7px 16px;
             background: #38bdf8;
             border: none;
             color: #0b0f19;
-            font-size: 15px;
+            font-size: 12px;
             font-weight: bold;
-            border-radius: 10px;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 4px;
         }
 
         .store-items {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 5px;
+            margin: 6px 0;
             width: 100%;
-            max-width: 320px;
-            max-height: 55vh;
+            max-width: 280px;
+            max-height: 38vh;
             overflow-y: auto;
-            padding-right: 5px;
+            padding-right: 4px;
         }
 
         .store-card {
             background: #1e293b;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 5px 8px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border: 1px solid #334155;
         }
 
+        /* Controls strictly inside canvas game container */
         .controls-overlay {
-            width: 100vw;
-            padding: 8px 15px 12px 15px;
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
             display: flex;
             justify-content: space-between;
-            gap: 15px;
+            gap: 10px;
             z-index: 20;
-            background: #0b0f19;
+            pointer-events: none;
         }
 
         .btn-touch {
+            pointer-events: auto;
             flex: 1;
-            padding: 14px 0;
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 12px;
+            padding: 10px 0;
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 10px;
             color: #ffffff;
-            font-size: 22px;
+            font-size: 18px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
         }
 
         .btn-touch:active {
@@ -202,18 +211,18 @@
 
         #btn-pause {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 6px 12px;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
             background: rgba(30, 41, 59, 0.85);
             border: none;
             color: #fff;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             cursor: pointer;
             z-index: 25;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -225,61 +234,70 @@
     </header>
 
     <div id="game-wrapper">
-        <button id="btn-pause" style="display:none;">⏸ Pause / Store</button>
+        <button id="btn-pause" style="display:none;">⏸ Pause</button>
 
         <!-- Start Menu Overlay -->
         <div id="menu-overlay" class="overlay-screen">
-            <h2>Select Weather Mode</h2>
+            <h2>Select Difficulty</h2>
             <div class="select-group">
-                <button class="btn-ui active" onclick="setWeatherMode('AUTO', this)">Auto Dynamic</button>
-                <button class="btn-ui" onclick="setWeatherMode('SUMMER', this)">Summer ☀️</button>
-                <button class="btn-ui" onclick="setWeatherMode('RAINY', this)">Rainy 🌧️</button>
-                <button class="btn-ui" onclick="setWeatherMode('STORM', this)">Storm ⚡</button>
-                <button class="btn-ui" onclick="setWeatherMode('WINTER', this)">Winter ❄️</button>
+                <button class="btn-ui active" onclick="setGameLevel('EASY', 3.2, this)">Easy 🟢</button>
+                <button class="btn-ui" onclick="setGameLevel('MEDIUM', 3.8, this)">Medium 🟡</button>
+                <button class="btn-ui" onclick="setGameLevel('HARD', 4.6, this)">Hard 🔴</button>
             </div>
-            <button class="btn-main" onclick="startGame()">START GAME 🚀</button>
-            <button class="btn-store" onclick="openStore()">🛍️ STORE & POWERS (Coins: <span id="menu-coins">0</span>)</button>
+
+            <h2>Weather Mode</h2>
+            <div class="select-group">
+                <button class="btn-ui active" onclick="setWeatherMode('AUTO', this)">Auto</button>
+                <button class="btn-ui" onclick="setWeatherMode('SUMMER', this)">Summer</button>
+                <button class="btn-ui" onclick="setWeatherMode('RAINY', this)">Rainy</button>
+                <button class="btn-ui" onclick="setWeatherMode('STORM', this)">Storm</button>
+                <button class="btn-ui" onclick="setWeatherMode('WINTER', this)">Winter</button>
+            </div>
+
+            <button class="btn-main" onclick="startCountdownAndGame()">START GAME 🚀</button>
+            <button class="btn-store" onclick="openStore()">🛍️ STORE (Coins: <span id="menu-coins">0</span>)</button>
         </div>
 
         <!-- Store Menu Overlay -->
         <div id="store-overlay" class="overlay-screen" style="display:none;">
             <h2>Store & Powers 🛍️</h2>
-            <p style="color: #facc15; margin-bottom: 5px;">Available Coins: 🪙 <span id="store-coins">0</span></p>
+            <p style="color: #facc15; margin-bottom: 3px; font-size:11px;">Available Coins: 🪙 <span id="store-coins">0</span></p>
             
             <div class="store-items">
-                <p style="color:#38bdf8; font-weight:bold; font-size:13px; text-align:left;">Consumable Characters:</p>
+                <p style="color:#38bdf8; font-weight:bold; font-size:10px; text-align:left;">Consumable Characters:</p>
                 <div class="store-card">
-                    <span style="color:#fff; font-weight:bold; font-size:13px;">🏃‍♂️ Classic Runner</span>
-                    <button class="btn-ui active" style="padding:4px 10px;" id="btn-char-0" onclick="buyAndSelectCharacter(0, 0)">Equip</button>
+                    <span style="color:#fff; font-weight:bold; font-size:10px;">🏃‍♂️ Classic Runner</span>
+                    <button class="btn-ui active" style="padding:2px 5px;" id="btn-char-0" onclick="buyAndSelectCharacter(0, 0)">Equip</button>
                 </div>
                 <div class="store-card">
-                    <span style="color:#fff; font-weight:bold; font-size:13px;">🥷 Ninja Runner</span>
-                    <button class="btn-ui" style="padding:4px 10px;" id="btn-char-1" onclick="buyAndSelectCharacter(1, 100)">Use 100 🪙</button>
+                    <span style="color:#fff; font-weight:bold; font-size:10px;">🥷 Ninja Runner</span>
+                    <button class="btn-ui" style="padding:2px 5px;" id="btn-char-1" onclick="buyAndSelectCharacter(1, 100)">Use 100 🪙</button>
                 </div>
                 <div class="store-card">
-                    <span style="color:#fff; font-weight:bold; font-size:13px;">⚡ Flash</span>
-                    <button class="btn-ui" style="padding:4px 10px;" id="btn-char-2" onclick="buyAndSelectCharacter(2, 250)">Use 250 🪙</button>
+                    <span style="color:#fff; font-weight:bold; font-size:10px;">⚡ Flash</span>
+                    <button class="btn-ui" style="padding:2px 5px;" id="btn-char-2" onclick="buyAndSelectCharacter(2, 250)">Use 250 🪙</button>
                 </div>
 
-                <p style="color:#38bdf8; font-weight:bold; font-size:13px; text-align:left; margin-top:8px;">7 Heavy Special Powers:</p>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">🛡️ Shield (5s Invincible)</span><button class="btn-ui" style="padding:4px 10px;" id="pow-shield" onclick="buyPower('shield', 50)">50 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">🧲 Coin Magnet</span><button class="btn-ui" style="padding:4px 10px;" id="pow-magnet" onclick="buyPower('magnet', 75)">75 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">💖 Revive (Second Chance)</span><button class="btn-ui" style="padding:4px 10px;" id="pow-revive" onclick="buyPower('revive', 150)">150 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">⚡ Turbo Speed Boost</span><button class="btn-ui" style="padding:4px 10px;" id="pow-turbo" onclick="buyPower('turbo', 60)">60 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">🪂 Double Jump Power</span><button class="btn-ui" style="padding:4px 10px;" id="pow-doublejump" onclick="buyPower('doublejump', 80)">80 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">🛑 Time Slow Motion</span><button class="btn-ui" style="padding:4px 10px;" id="pow-slow" onclick="buyPower('slow', 90)">90 🪙</button></div>
-                <div class="store-card"><span style="color:#fff; font-size:12px;">💎 2x Score Multiplier</span><button class="btn-ui" style="padding:4px 10px;" id="pow-multiplier" onclick="buyPower('multiplier', 100)">100 🪙</button></div>
+                <p style="color:#38bdf8; font-weight:bold; font-size:10px; text-align:left; margin-top:3px;">7 Heavy Special Powers:</p>
+                <div class="store-card"><span style="color:#fff; font-size:9px;">🛡️ Shield (5s)</span><button class="btn-ui" style="padding:2px 5px;" id="pow-shield" onclick="buyPower('shield', 50)">50 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:9px;">🧲 Coin Magnet</span><button class="btn-ui" style="padding:2px 5px;" id="pow-magnet" onclick="buyPower('magnet', 75)">75 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:9px;">💖 Revive Chance</span><button class="btn-ui" style="padding:2px 5px;" id="pow-revive" onclick="buyPower('revive', 150)">150 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:9px;">⚡ Turbo Boost</span><button class="btn-ui" style="padding:2px 5px;" id="pow-turbo" onclick="buyPower('turbo', 60)">60 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:9px;">🪂 Double Jump</span><button class="btn-ui" style="padding:2px 5px;" id="pow-doublejump" onclick="buyPower('doublejump', 80)">80 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:9px;">🛑 Slow Motion</span><button class="btn-ui" style="padding:2px 5px;" id="pow-slow" onclick="buyPower('slow', 90)">90 🪙</button></div>
+                <div class="store-card"><span style="color:#fff; font-size:9px;">💎 2x Score</span><button class="btn-ui" style="padding:2px 5px;" id="pow-multiplier" onclick="buyPower('multiplier', 100)">100 🪙</button></div>
             </div>
 
             <button class="btn-main" onclick="closeStore()">🔙 RESUME / MENU</button>
         </div>
 
         <canvas id="gameCanvas"></canvas>
-    </div>
 
-    <div class="controls-overlay">
-        <div class="btn-touch" id="btn-duck">👇</div>
-        <div class="btn-touch" id="btn-jump">🏃‍♂️</div>
+        <!-- Touch Controls strictly inside canvas game container -->
+        <div class="controls-overlay">
+            <div class="btn-touch" id="btn-duck">👇</div>
+            <div class="btn-touch" id="btn-jump">🏃‍♂️</div>
+        </div>
     </div>
 
     <script>
@@ -306,12 +324,10 @@
         }
 
         function resizeCanvasResolution() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width || 500;
-            canvas.height = rect.height || 800;
+            canvas.width = 400;
+            canvas.height = 600;
         }
-        window.addEventListener('resize', resizeCanvasResolution);
-        setTimeout(resizeCanvasResolution, 100);
+        resizeCanvasResolution();
 
         let score = 0;
         let coins = parseInt(localStorage.getItem('runner_coins')) || 1000; 
@@ -340,11 +356,23 @@
         let hasRevive = false;
 
         let isMiniBossActive = false;
-        let bossTimer = 0; // Meteor shower duration timer (60 frames = 1 second)
-        let meteorDurationBonus = 0; // Har 1500 points ke baad 2 seconds (120 frames) ka addition
+        let bossTimer = 0;
         let meteors = [];
+        let countdownValue = 0;
+        let countdownTimer = null;
+
+        let selectedLevelName = 'EASY';
+        let selectedBaseSpeed = 3.2;
 
         document.getElementById('menu-coins').innerText = coins;
+
+        function setGameLevel(levelName, speedVal, btn) {
+            selectedLevelName = levelName;
+            selectedBaseSpeed = speedVal;
+            let parentGroup = btn.parentElement;
+            parentGroup.querySelectorAll('.btn-ui').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
 
         function openStore() {
             if(gameStarted && !isPaused) {
@@ -361,9 +389,7 @@
             storeOverlay.style.display = 'none';
             if(gameStarted) {
                 menuOverlay.style.display = 'none';
-                isPaused = false;
-                btnPause.innerText = '⏸ Pause / Store';
-                animate();
+                startCountdownAndGame(true);
             } else {
                 menuOverlay.style.display = 'flex';
                 document.getElementById('menu-coins').innerText = coins;
@@ -372,6 +398,7 @@
 
         function updateStoreUI() {
             document.getElementById('store-coins').innerText = coins;
+            localStorage.setItem('runner_coins', coins);
             for(let i=0; i<3; i++) {
                 let btn = document.getElementById('btn-char-' + i);
                 if(currentChar === i) {
@@ -433,7 +460,7 @@
                 else if(type === 'revive') { hasRevive = true; }
                 else if(type === 'turbo') { activeTurbo = true; }
                 else if(type === 'doublejump') { hasDoubleJumpPower = true; }
-                else if(type === 'slow') { activeSlow = true; slowTimer = 300; }
+                else if(type === 'slow') { activeSlow = true; slowTimer = 306; }
                 else if(type === 'multiplier') { activeMultiplier = true; }
 
                 alert(`Successfully bought & activated ${type.toUpperCase()}!`);
@@ -448,16 +475,16 @@
         let gameOver = false;
         let isPaused = false;
         let gameStarted = false;
-        let baseGameSpeed = 5.5;
-        let gameSpeed = 5.5;
+        let baseGameSpeed = 3.2;
+        let gameSpeed = 3.2;
         let frame = 0;
         let selectedMode = 'AUTO';
 
         const weathers = [
             { name: 'SUMMER', skyTop: [56, 189, 248], skyBot: [2, 132, 199], groundTop: [22, 197, 94], speedMult: 1.0 },
-            { name: 'RAINY', skyTop: [71, 85, 105], skyBot: [30, 41, 59], groundTop: [21, 128, 61], speedMult: 1.05 },
-            { name: 'STORM', skyTop: [15, 23, 42], skyBot: [2, 6, 23], groundTop: [15, 23, 42], speedMult: 1.15 },
-            { name: 'WINTER', skyTop: [148, 163, 184], skyBot: [71, 85, 105], groundTop: [241, 245, 249], speedMult: 0.95 }
+            { name: 'RAINY', skyTop: [71, 85, 105], skyBot: [30, 41, 59], groundTop: [21, 128, 61], speedMult: 1.02 },
+            { name: 'STORM', skyTop: [15, 23, 42], skyBot: [2, 6, 23], groundTop: [15, 23, 42], speedMult: 1.05 },
+            { name: 'WINTER', skyTop: [148, 163, 184], skyBot: [71, 85, 105], groundTop: [241, 245, 249], speedMult: 0.98 }
         ];
 
         let currentWeatherIdx = 0;
@@ -474,11 +501,11 @@
         const player = {
             x: 60,
             y: 0,
-            width: 55,
-            height: 75,
+            width: 45,
+            height: 65,
             dy: 0,
-            gravity: 0.6,
-            jumpForce: -13,
+            gravity: 0.5,
+            jumpForce: -11,
             isJumping: false,
             isDucking: false,
             jumpCount: 0
@@ -490,7 +517,8 @@
 
         function setWeatherMode(mode, btn) {
             selectedMode = mode;
-            document.querySelectorAll('.select-group .btn-ui').forEach(b => b.classList.remove('active'));
+            let parentGroup = btn.parentElement;
+            parentGroup.querySelectorAll('.btn-ui').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             if (mode !== 'AUTO') {
                 let idx = weathers.findIndex(w => w.name === mode);
@@ -501,12 +529,55 @@
             }
         }
 
-        function startGame() {
+        function startCountdownAndGame(isResume = false) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             menuOverlay.style.display = 'none';
-            btnPause.style.display = 'block';
+            storeOverlay.style.display = 'none';
+            
+            if (!isResume) {
+                resetGameVars();
+            }
+
+            countdownValue = 3;
+            isPaused = true;
             gameStarted = true;
-            resetGame();
+            btnPause.style.display = 'block';
+
+            animateOnce();
+
+            if(countdownTimer) clearInterval(countdownTimer);
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                if(countdownValue <= 0) {
+                    clearInterval(countdownTimer);
+                    countdownValue = 0;
+                    isPaused = false;
+                    btnPause.innerText = '⏸ Pause';
+                    animate();
+                } else {
+                    animateOnce();
+                }
+            }, 1000);
+        }
+
+        function animateOnce() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawDynamicWeather();
+            let groundY = canvas.height * 0.65;
+            let playerFloorY = groundY - player.height;
+            drawHumanRunner(player.x, playerFloorY, false, false, frame);
+            
+            if(countdownValue > 0) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(11, 15, 25, 0.75)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#facc15';
+                ctx.font = 'bold 50px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(countdownValue, canvas.width / 2, canvas.height / 2);
+                ctx.restore();
+            }
         }
 
         function returnToMenu() {
@@ -527,11 +598,12 @@
         }
 
         btnPause.addEventListener('click', () => {
-            if (!gameStarted || gameOver) return;
+            if (!gameStarted || gameOver || countdownValue > 0) return;
             openStore();
         });
 
         window.addEventListener('keydown', (e) => {
+            if (countdownValue > 0) return;
             if (e.code === 'Space' || e.code === 'ArrowUp') jump();
             if (e.code === 'ArrowDown') { 
                 if(!player.isDucking) { player.isDucking = true; playSound(200, 'sine', 0.1); }
@@ -545,19 +617,19 @@
         const btnJump = document.getElementById('btn-jump');
         const btnDuck = document.getElementById('btn-duck');
 
-        btnJump.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
+        btnJump.addEventListener('touchstart', (e) => { e.preventDefault(); if(countdownValue === 0) jump(); });
         btnDuck.addEventListener('touchstart', (e) => { 
             e.preventDefault(); 
-            if(!player.isDucking) { player.isDucking = true; playSound(200, 'sine', 0.1); }
+            if(countdownValue === 0 && !player.isDucking) { player.isDucking = true; playSound(200, 'sine', 0.1); }
         });
         btnDuck.addEventListener('touchend', (e) => { e.preventDefault(); player.isDucking = false; });
 
         function jump() {
-            if (!gameOver && gameStarted && !isPaused) {
+            if (!gameOver && gameStarted && !isPaused && countdownValue === 0) {
                 if (!player.isJumping && !player.isDucking) {
                     let currentJumpPower = player.jumpForce;
-                    if (currentChar === 1) { currentJumpPower = -15.5; } 
-                    else if (currentChar === 2) { currentJumpPower = -14; }
+                    if (currentChar === 1) { currentJumpPower = -12.5; } 
+                    else if (currentChar === 2) { currentJumpPower = -11.5; }
                     
                     if (activeSlow) { currentJumpPower *= 0.75; }
 
@@ -576,23 +648,22 @@
                     playSound(600, 'triangle', 0.15);
                 }
             } else if (gameOver) {
-                resetGame();
+                startCountdownAndGame();
             }
         }
 
-        function resetGame() {
+        function resetGameVars() {
             score = 0;
             level = 1;
-            baseGameSpeed = 5.5;
+            baseGameSpeed = selectedBaseSpeed;
             obstacles = [];
             collectibleCoins = [];
             meteors = [];
             isMiniBossActive = false;
             bossTimer = 0;
-            meteorDurationBonus = 0;
             gameOver = false;
             isPaused = false;
-            btnPause.innerText = '⏸ Pause / Store';
+            btnPause.innerText = '⏸ Pause';
             if (selectedMode === 'AUTO') {
                 currentWeatherIdx = 0;
                 nextWeatherIdx = 1;
@@ -601,7 +672,6 @@
             player.dy = 0;
             player.isJumping = false;
             player.isDucking = false;
-            animate();
         }
 
         function triggerGameOverOrRevive() {
@@ -723,7 +793,7 @@
             else if (currentChar === 2) { shirtColor1 = '#eab308'; shirtColor2 = '#ca8a04'; } 
 
             let isRunning = !isJumping && !isDucking;
-            let animSpeedFactor = activeSlow ? 0.15 : (currentChar === 2 ? 0.5 : 0.35);
+            let animSpeedFactor = activeSlow ? 0.15 : (currentChar === 2 ? 0.45 : 0.3);
             let cycle = isRunning ? Math.sin(animFrame * animSpeedFactor) : 0;
             
             let legSwing = cycle * 0.6;
@@ -732,86 +802,83 @@
             let shadowAlpha = isJumping ? 0.15 : 0.4;
             ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
             ctx.beginPath(); 
-            ctx.ellipse(28, isDucking ? 60 : 82, 30, 8, 0, 0, Math.PI * 2); 
+            ctx.ellipse(22, isDucking ? 50 : 68, 22, 6, 0, 0, Math.PI * 2); 
             ctx.fill();
 
             if(activeShield) {
                 ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
-                ctx.arc(24, 40, 45, 0, Math.PI * 2);
+                ctx.arc(20, 32, 36, 0, Math.PI * 2);
                 ctx.stroke();
             }
 
             if (isDucking) {
-                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 10; ctx.lineCap = 'round';
-                ctx.beginPath(); ctx.moveTo(14, 38); ctx.lineTo(0, 56); ctx.lineTo(12, 58); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(14, 38); ctx.lineTo(26, 56); ctx.lineTo(38, 58); ctx.stroke();
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(10, 30); ctx.lineTo(0, 45); ctx.lineTo(8, 47); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(10, 30); ctx.lineTo(20, 45); ctx.lineTo(30, 47); ctx.stroke();
                 
-                let torsoGrad = ctx.createLinearGradient(0, 20, 32, 38);
+                let torsoGrad = ctx.createLinearGradient(0, 16, 25, 30);
                 torsoGrad.addColorStop(0, shirtColor1); torsoGrad.addColorStop(1, shirtColor2);
                 ctx.fillStyle = torsoGrad;
-                ctx.beginPath(); ctx.ellipse(20, 30, 20, 12, -0.4, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(16, 23, 16, 9, -0.4, 0, Math.PI * 2); ctx.fill();
 
-                let headGrad = ctx.createRadialGradient(32, 18, 2, 32, 18, 11);
+                let headGrad = ctx.createRadialGradient(25, 13, 2, 25, 13, 9);
                 headGrad.addColorStop(0, '#ffedd5'); headGrad.addColorStop(1, '#fed7aa');
                 ctx.fillStyle = headGrad;
-                ctx.beginPath(); ctx.arc(32, 18, 11, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(25, 13, 9, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath(); ctx.arc(32, 16, 11, Math.PI, Math.PI * 2); ctx.fill();
-
-                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 8;
-                ctx.beginPath(); ctx.moveTo(18, 26); ctx.lineTo(32, 35); ctx.stroke();
+                ctx.beginPath(); ctx.arc(25, 11, 9, Math.PI, Math.PI * 2); ctx.fill();
             } else {
-                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 8; ctx.lineCap = 'round';
+                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 6; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(24, 25);
-                let backArmX = 24 - Math.sin(-armSwing) * 16;
-                let backArmY = 25 + Math.cos(-armSwing) * 16;
-                ctx.lineTo(backArmX, backArmY); ctx.lineTo(backArmX - 6, backArmY + 10); ctx.stroke();
+                ctx.moveTo(20, 20);
+                let backArmX = 20 - Math.sin(-armSwing) * 12;
+                let backArmY = 20 + Math.cos(-armSwing) * 12;
+                ctx.lineTo(backArmX, backArmY); ctx.lineTo(backArmX - 4, backArmY + 7); ctx.stroke();
 
-                ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 12; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 9; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(24, 46);
-                let backKneeX = 24 + Math.sin(-legSwing) * 18;
-                let backKneeY = 46 + Math.cos(-legSwing) * 18;
-                ctx.lineTo(backKneeX, backKneeY); ctx.lineTo(backKneeX - Math.sin(-legSwing) * 12, backKneeY + 16); ctx.stroke();
+                ctx.moveTo(20, 38);
+                let backKneeX = 20 + Math.sin(-legSwing) * 14;
+                let backKneeY = 38 + Math.cos(-legSwing) * 14;
+                ctx.lineTo(backKneeX, backKneeY); ctx.lineTo(backKneeX - Math.sin(-legSwing) * 8, backKneeY + 12); ctx.stroke();
 
-                let shirtGrad = ctx.createLinearGradient(10, 20, 35, 48);
+                let shirtGrad = ctx.createLinearGradient(7, 16, 28, 40);
                 shirtGrad.addColorStop(0, shirtColor1);
                 shirtGrad.addColorStop(0.7, shirtColor2);
                 shirtGrad.addColorStop(1, '#0f172a');
                 ctx.fillStyle = shirtGrad;
-                ctx.beginPath(); ctx.moveTo(10, 24); ctx.lineTo(34, 24); ctx.lineTo(28, 50); ctx.lineTo(14, 50); ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(7, 20); ctx.lineTo(28, 20); ctx.lineTo(23, 40); ctx.lineTo(11, 40); ctx.closePath(); ctx.fill();
 
-                ctx.fillStyle = '#fed7aa'; ctx.fillRect(18, 16, 8, 8);
+                ctx.fillStyle = '#fed7aa'; ctx.fillRect(14, 12, 6, 6);
 
-                let headGrad = ctx.createRadialGradient(22, 10, 2, 22, 10, 11);
+                let headGrad = ctx.createRadialGradient(18, 7, 2, 18, 7, 9);
                 headGrad.addColorStop(0, '#ffedd5');
                 headGrad.addColorStop(1, '#fed7aa');
                 ctx.fillStyle = headGrad;
-                ctx.beginPath(); ctx.arc(22, 10, 11, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(18, 7, 9, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#0f172a';
-                ctx.beginPath(); ctx.arc(22, 8, 11.2, Math.PI * 0.8, Math.PI * 2.1); ctx.fill();
+                ctx.beginPath(); ctx.arc(18, 5, 9.2, Math.PI * 0.8, Math.PI * 2.1); ctx.fill();
 
-                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 12.5; ctx.lineCap = 'round';
+                ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 9.5; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(24, 46);
-                let frontKneeX = 24 + Math.sin(legSwing) * 18;
-                let frontKneeY = 46 + Math.cos(legSwing) * 18;
-                ctx.lineTo(frontKneeX, frontKneeY); ctx.lineTo(frontKneeX - Math.sin(legSwing) * 12, frontKneeY + 16); ctx.stroke();
+                ctx.moveTo(20, 38);
+                let frontKneeX = 20 + Math.sin(legSwing) * 14;
+                let frontKneeY = 38 + Math.cos(legSwing) * 14;
+                ctx.lineTo(frontKneeX, frontKneeY); ctx.lineTo(frontKneeX - Math.sin(legSwing) * 8, frontKneeY + 12); ctx.stroke();
 
                 ctx.fillStyle = '#38bdf8';
-                ctx.beginPath(); ctx.ellipse(frontKneeX - Math.sin(legSwing) * 12 + 2, frontKneeY + 16, 8, 4, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.ellipse(frontKneeX - Math.sin(legSwing) * 8 + 2, frontKneeY + 12, 6, 3, 0, 0, Math.PI * 2); ctx.fill();
 
-                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 9; ctx.lineCap = 'round';
+                ctx.strokeStyle = shirtColor1; ctx.lineWidth = 7; ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(24, 24);
-                let frontArmX = 24 - Math.sin(armSwing) * 16;
-                let frontArmY = 24 + Math.cos(armSwing) * 16;
-                ctx.lineTo(frontArmX, frontArmY); ctx.lineTo(frontArmX + 6, frontArmY + 10); ctx.stroke();
+                ctx.moveTo(20, 20);
+                let frontArmX = 20 - Math.sin(armSwing) * 12;
+                let frontArmY = 20 + Math.cos(armSwing) * 12;
+                ctx.lineTo(frontArmX, frontArmY); ctx.lineTo(frontArmX + 4, frontArmY + 7); ctx.stroke();
             }
 
             ctx.restore();
@@ -825,16 +892,16 @@
 
             ctx.fillStyle = '#f59e0b';
             ctx.beginPath();
-            ctx.arc(0, 0, 14, 0, Math.PI * 2);
+            ctx.arc(0, 0, 11, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.fillStyle = '#fbbf24';
             ctx.beginPath();
-            ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            ctx.arc(0, 0, 7, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.fillStyle = '#d97706';
-            ctx.font = 'bold 14px Arial';
+            ctx.font = 'bold 11px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('🪙', 0, 0);
@@ -847,11 +914,11 @@
             ctx.translate(x, y);
             ctx.fillStyle = '#ef4444';
             ctx.beginPath();
-            ctx.arc(0, 0, 18, 0, Math.PI * 2);
+            ctx.arc(0, 0, 12, 0, Math.PI * 2); // Smaller radius (was 15)
             ctx.fill();
             ctx.fillStyle = '#f97316';
             ctx.beginPath();
-            ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            ctx.arc(0, 0, 6, 0, Math.PI * 2); // Smaller inner radius (was 8)
             ctx.fill();
             ctx.restore();
         }
@@ -859,34 +926,34 @@
         function drawRealisticParrot(x, y, animFrame, width, height) {
             ctx.save();
             ctx.translate(x, y);
-            let scaleX = width / 40;
-            let scaleY = height / 25;
+            let scaleX = width / 26;
+            let scaleY = height / 15;
             ctx.scale(scaleX, scaleY);
-            let wingFlap = Math.sin(animFrame * 0.3) * 16;
+            let wingFlap = Math.sin(animFrame * 0.3) * 10;
 
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
-            ctx.beginPath(); ctx.ellipse(18, 60, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(13, 40, 8, 2.5, 0, 0, Math.PI * 2); ctx.fill();
 
-            let bodyGrad = ctx.createLinearGradient(0, 5, 28, 18);
+            let bodyGrad = ctx.createLinearGradient(0, 4, 20, 12);
             bodyGrad.addColorStop(0, '#22c55e'); bodyGrad.addColorStop(0.6, '#16a34a'); bodyGrad.addColorStop(1, '#15803d');
             ctx.fillStyle = bodyGrad;
-            ctx.beginPath(); ctx.ellipse(18, 12, 18, 7, -0.1, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(12, 9, 12, 4.5, -0.1, 0, Math.PI * 2); ctx.fill();
 
             ctx.fillStyle = '#0d9488';
-            ctx.beginPath(); ctx.moveTo(30, 13); ctx.lineTo(46, 18); ctx.lineTo(32, 15); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(20, 9); ctx.lineTo(30, 12); ctx.lineTo(22, 11); ctx.closePath(); ctx.fill();
 
-            let wingGrad = ctx.createLinearGradient(12, 10, 26, 10 - wingFlap);
+            let wingGrad = ctx.createLinearGradient(6, 6, 18, 6 - wingFlap);
             wingGrad.addColorStop(0, '#f59e0b'); wingGrad.addColorStop(0.5, '#10b981'); wingGrad.addColorStop(1, '#0284c7');
             ctx.fillStyle = wingGrad;
-            ctx.beginPath(); ctx.moveTo(12, 10); ctx.quadraticCurveTo(21, 10 - wingFlap * 1.3, 29, 5 - wingFlap); ctx.quadraticCurveTo(21, 14, 14, 16); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(6, 6); ctx.quadraticCurveTo(12, 6 - wingFlap * 1.1, 18, 2 - wingFlap); ctx.quadraticCurveTo(12, 8, 8, 10); ctx.closePath(); ctx.fill();
 
             ctx.fillStyle = '#ef4444';
-            ctx.beginPath(); ctx.moveTo(4, 10); ctx.quadraticCurveTo(-5, 12, -2, 18); ctx.lineTo(4, 14); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(2, 7); ctx.quadraticCurveTo(-2, 9, 0, 12); ctx.lineTo(2, 9); ctx.closePath(); ctx.fill();
 
             ctx.fillStyle = '#ffffff';
-            ctx.beginPath(); ctx.arc(7, 10, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(4, 7, 2, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#0f172a';
-            ctx.beginPath(); ctx.arc(6.5, 10, 1.4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(3.6, 7, 1, 0, Math.PI * 2); ctx.fill();
 
             ctx.restore();
         }
@@ -900,15 +967,15 @@
             ctx.fillRect(0, 0, width, height);
 
             ctx.fillStyle = '#d97706';
-            ctx.fillRect(0, 0, width, 6); ctx.fillRect(0, height - 6, width, 6);
-            ctx.fillRect(0, 0, 6, height); ctx.fillRect(width - 6, 0, 6, height);
+            ctx.fillRect(0, 0, width, 3); ctx.fillRect(0, height - 3, width, 3);
+            ctx.fillRect(0, 0, 3, height); ctx.fillRect(width - 3, 0, 3, height);
 
             ctx.fillStyle = '#94a3b8';
-            ctx.fillRect(3, 3, 3, 3); ctx.fillRect(width - 6, 3, 3, 3);
-            ctx.fillRect(3, height - 6, 3, 3); ctx.fillRect(width - 6, height - 6, 3, 3);
+            ctx.fillRect(2, 2, 2, 2); ctx.fillRect(width - 4, 2, 2, 2);
+            ctx.fillRect(2, height - 4, 2, 2); ctx.fillRect(width - 4, height - 4, 2, 2);
 
-            ctx.strokeStyle = '#451a03'; ctx.lineWidth = 3.5;
-            ctx.beginPath(); ctx.moveTo(3, 3); ctx.lineTo(width - 3, height - 3); ctx.moveTo(width - 3, 3); ctx.lineTo(3, height - 3); ctx.stroke();
+            ctx.strokeStyle = '#451a03'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(2, 2); ctx.lineTo(width - 2, height - 2); ctx.moveTo(width - 2, 2); ctx.lineTo(2, height - 2); ctx.stroke();
             ctx.restore();
         }
 
@@ -928,12 +995,10 @@
                 }
             }
 
-            // Har 1500 points ke baad Meteor Shower trigger hoga (Duration 15s + 2s har dafa barhegi)
             if (score > 0 && score % 1500 === 0 && !isMiniBossActive) {
                 isMiniBossActive = true;
-                bossTimer = (15 + meteorDurationBonus) * 60; // 15 secs base + accumulated bonus (60 fps)
-                meteorDurationBonus += 2; // Agli dafa ke liye 2 seconds mazeed barh jayenge
-                obstacles = []; // Ground ke saare obstacles/birds remove kar diye taake sirf meteors rahein!
+                bossTimer = 480; 
+                obstacles = []; 
                 playSound(300, 'sawtooth', 0.6);
             }
 
@@ -942,6 +1007,7 @@
                 if (bossTimer <= 0) {
                     isMiniBossActive = false;
                     coins += 50;
+                    localStorage.setItem('runner_coins', coins);
                     playSound(900, 'sine', 0.4);
                 }
             }
@@ -958,26 +1024,26 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 ctx.fillStyle = '#facc15';
-                ctx.font = 'bold 36px Arial';
+                ctx.font = 'bold 30px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 60);
+                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 45);
 
                 ctx.fillStyle = '#38bdf8';
-                ctx.font = 'bold 20px Arial';
-                ctx.fillText('Score: ' + score + ' | High: ' + highScore, canvas.width / 2, canvas.height / 2 - 20);
-
-                ctx.fillStyle = '#22c55e';
-                ctx.fillText('Total Coins 🪙: ' + coins, canvas.width / 2, canvas.height / 2 + 20);
-
-                ctx.fillStyle = '#22c55e';
-                ctx.fillRect(canvas.width / 2 - 110, canvas.height / 2 + 65, 220, 45);
-                ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 16px Arial';
-                ctx.fillText('🔙 BACK TO MENU', canvas.width / 2, canvas.height / 2 + 93);
+                ctx.fillText('Score: ' + score + ' | High: ' + highScore, canvas.width / 2, canvas.height / 2 - 10);
+
+                ctx.fillStyle = '#22c55e';
+                ctx.fillText('Total Coins 🪙: ' + coins, canvas.width / 2, canvas.height / 2 + 25);
+
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(canvas.width / 2 - 90, canvas.height / 2 + 60, 180, 38);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('🔙 BACK TO MENU', canvas.width / 2, canvas.height / 2 + 84);
 
                 ctx.fillStyle = '#94a3b8';
-                ctx.font = '14px Arial';
-                ctx.fillText('Tap JUMP to Play Again', canvas.width / 2, canvas.height / 2 + 130);
+                ctx.font = '12px Arial';
+                ctx.fillText('Tap JUMP to Play Again', canvas.width / 2, canvas.height / 2 + 115);
 
                 ctx.textAlign = 'left';
                 return;
@@ -1008,51 +1074,52 @@
                 player.isJumping = false;
             }
 
-            let currentY = player.isDucking ? player.y + 30 : player.y;
+            let currentY = player.isDucking ? player.y + 22 : player.y;
             drawHumanRunner(player.x, currentY, player.isDucking, player.isJumping, frame);
 
             spawnTimer++;
-            let spawnLimit = isMiniBossActive ? 22 : Math.max(40, 85 - (gameSpeed * 3));
+            let spawnLimit = isMiniBossActive ? 30 : Math.max(75, 120 - (gameSpeed * 2));
             if (spawnTimer > spawnLimit) {
                 if (isMiniBossActive) {
-                    if (Math.random() < 0.8) {
-                        meteors.push({ x: Math.random() * (canvas.width - 100) + 50, y: -20, speed: 8 });
+                    if (Math.random() < 0.7) {
+                        // Meteors now come from the front right, at variable heights (ground level to jump height)
+                        let meteorY = Math.random() > 0.5 ? groundY - 40 : groundY - 80;
+                        meteors.push({ x: canvas.width, y: meteorY, speed: gameSpeed * 1.2 });
                     }
                 } else {
                     let randType = Math.random();
                     if (randType > 0.55) {
-                        let heights = [groundY - 105, groundY - 75];
-                        obstacles.push({ x: canvas.width, y: heights[Math.floor(Math.random() * heights.length)], width: 70, height: 38, type: 'bird' });
+                        let birdY = groundY - 78; 
+                        obstacles.push({ x: canvas.width, y: birdY, width: 42, height: 22, type: 'bird' });
                     } else if (randType > 0.25) {
-                        obstacles.push({ x: canvas.width, y: groundY - 60, width: 75, height: 60, type: 'crate' });
+                        obstacles.push({ x: canvas.width, y: groundY - 40, width: 46, height: 40, type: 'crate' });
                     } else {
                         for(let c = 0; c < 3; c++) {
-                            collectibleCoins.push({ x: canvas.width + (c * 35), y: groundY - 110, collected: false });
+                            collectibleCoins.push({ x: canvas.width + (c * 28), y: groundY - 80, collected: false });
                         }
                     }
                 }
                 spawnTimer = 0;
             }
 
-            let currentHeight = player.isDucking ? 45 : 85;
+            let currentHeight = player.isDucking ? 38 : 65;
 
             for (let i = 0; i < collectibleCoins.length; i++) {
                 let coin = collectibleCoins[i];
-                if (activeMagnet && coin.x > player.x - 150 && coin.x < player.x + 250) {
-                    coin.x += (player.x - coin.x) * 0.15;
+                if (activeMagnet && coin.x > player.x - 180 && coin.x < player.x + 280) {
+                    coin.x += (player.x - coin.x) * 0.25;
                 }
                 coin.x -= gameSpeed * timeFactor;
 
                 if (!coin.collected) {
                     drawCoin(coin.x, coin.y, frame);
-                    if (
-                        player.x < coin.x + 15 &&
-                        player.x + player.width > coin.x - 15 &&
-                        currentY < coin.y + 15 &&
-                        currentY + currentHeight > coin.y - 15
-                    ) {
+                    let isMagnetInRange = activeMagnet && Math.abs(player.x - coin.x) < 45 && Math.abs(currentY - coin.y) < 55;
+                    let isTouched = player.x < coin.x + 12 && player.x + player.width > coin.x - 12 && currentY < coin.y + 12 && currentY + currentHeight > coin.y - 12;
+
+                    if (isTouched || isMagnetInRange) {
                         coin.collected = true;
                         coins += 10;
+                        localStorage.setItem('runner_coins', coins); 
                         playSound(800, 'sine', 0.08);
                     }
                 }
@@ -1061,15 +1128,17 @@
 
             for (let i = 0; i < meteors.length; i++) {
                 let m = meteors[i];
-                m.y += m.speed * timeFactor;
-                m.x -= gameSpeed * 0.4 * timeFactor;
+                // Meteors move horizontally towards the player, slight vertical bobbing
+                m.x -= m.speed * timeFactor;
+                m.y += Math.sin(frame * 0.1) * 0.5; // Slight up/down movement
+
                 drawMeteor(m.x, m.y);
 
                 if (
-                    player.x < m.x + 15 &&
-                    player.x + player.width > m.x - 15 &&
-                    currentY < m.y + 15 &&
-                    currentY + currentHeight > m.y - 15
+                    player.x < m.x + 10 &&
+                    player.x + player.width > m.x - 10 &&
+                    currentY < m.y + 10 &&
+                    currentY + currentHeight > m.y - 10
                 ) {
                     if(activeShield) {
                         activeShield = false;
@@ -1080,7 +1149,7 @@
                     }
                 }
             }
-            meteors = meteors.filter(m => m.y < groundY + 20);
+            meteors = meteors.filter(m => m.x + 20 > 0); // Remove when off screen left
 
             if (!isMiniBossActive) {
                 for (let i = 0; i < obstacles.length; i++) {
@@ -1111,57 +1180,54 @@
                 obstacles = obstacles.filter(obs => obs.x + obs.width > 0);
             }
 
-            // === Score & UI Positioned at Center Top ===
             ctx.save();
             ctx.textAlign = 'center';
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 16px Arial';
-            ctx.fillText('Score: ' + score, canvas.width / 2, 30);
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('Score: ' + score, canvas.width / 2, 22);
             ctx.fillStyle = '#facc15';
-            ctx.fillText('🪙 Coins: ' + coins, canvas.width / 2, 55);
+            ctx.fillText('🪙 Coins: ' + coins, canvas.width / 2, 40);
             ctx.restore();
 
             if(activeShield) {
                 ctx.fillStyle = '#38bdf8';
-                ctx.font = 'bold 14px Arial';
-                ctx.fillText('🛡️ SHIELD', 20, 55);
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText('🛡️ SHIELD', 12, 40);
             }
             if(activeSlow) {
                 ctx.fillStyle = '#f43f5e';
-                ctx.font = 'bold 14px Arial';
-                ctx.fillText('🛑 SLOW MOTION', 20, 80);
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText('🛑 SLOW', 12, 58);
             }
 
             if(isMiniBossActive) {
                 ctx.fillStyle = '#ef4444';
-                ctx.font = 'bold 15px Arial';
+                ctx.font = 'bold 13px Arial';
                 ctx.textAlign = 'center';
                 let remainingSecs = Math.ceil(bossTimer / 60);
-                ctx.fillText(`⚔️ METEOR SHOWER! (${remainingSecs}s)`, canvas.width / 2, 85);
+                ctx.fillText(`⚔️ METEORS! (${remainingSecs}s)`, canvas.width / 2, 65);
                 
                 ctx.fillStyle = '#334155';
-                ctx.fillRect(canvas.width / 2 - 80, 95, 160, 10);
+                ctx.fillRect(canvas.width / 2 - 60, 72, 120, 7);
                 ctx.fillStyle = '#22c55e';
-                let maxDurationFrames = (15 + (meteorDurationBonus - 2)) * 60;
-                ctx.fillRect(canvas.width / 2 - 80, 95, (bossTimer / maxDurationFrames) * 160, 10);
+                ctx.fillRect(canvas.width / 2 - 60, 72, (bossTimer / 480) * 120, 7);
                 ctx.textAlign = 'left';
             } else {
-                let currName = weathers[currentWeatherIdx].name;
                 ctx.fillStyle = '#38bdf8';
-                ctx.font = 'bold 14px Arial';
-                ctx.fillText(`Lvl ${level} | ${currName}`, 20, 30);
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(`${selectedLevelName} | Lvl ${level}`, 12, 22);
             }
 
             let charSpeedMultiplier = 1.0;
             if (currentChar === 2) {
-                charSpeedMultiplier = 1.25;
+                charSpeedMultiplier = 1.15;
             }
             if (activeTurbo) {
-                charSpeedMultiplier *= 1.5;
+                charSpeedMultiplier *= 1.35;
             }
 
             let speedMult = weathers[currentWeatherIdx].speedMult || 1.0;
-            gameSpeed = (baseGameSpeed + (score * 0.0012)) * speedMult * charSpeedMultiplier;
+            gameSpeed = (baseGameSpeed + (score * 0.0005)) * speedMult * charSpeedMultiplier;
         }
 
         canvas.addEventListener('click', (e) => {
@@ -1171,14 +1237,14 @@
                 const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
 
                 if (
-                    clickX >= canvas.width / 2 - 110 &&
-                    clickX <= canvas.width / 2 + 110 &&
-                    clickY >= canvas.height / 2 + 65 &&
-                    clickY <= canvas.height / 2 + 110
+                    clickX >= canvas.width / 2 - 90 &&
+                    clickX <= canvas.width / 2 + 90 &&
+                    clickY >= canvas.height / 2 + 60 &&
+                    clickY <= canvas.height / 2 + 98
                 ) {
                     returnToMenu();
                 } else {
-                    resetGame();
+                    startCountdownAndGame();
                 }
             }
         });
